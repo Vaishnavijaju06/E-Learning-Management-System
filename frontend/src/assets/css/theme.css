@@ -1,0 +1,228 @@
+:root {
+  --sf-primary: #4f46e5;
+  --sf-primary-dark: #3730a3;
+  --sf-secondary: #7c3aed;
+  --sf-accent: #06b6d4;
+  --sf-dark: #111827;
+  --sf-muted: #64748b;
+  --sf-light: #f8fafc;
+  --sf-border: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--sf-dark);
+  background: #fff;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.text-primary {
+  color: var(--sf-primary) !important;
+}
+
+.bg-primary,
+.btn-primary {
+  background-color: var(--sf-primary) !important;
+  border-color: var(--sf-primary) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--sf-primary-dark) !important;
+  border-color: var(--sf-primary-dark) !important;
+}
+
+.btn-outline-primary {
+  color: var(--sf-primary);
+  border-color: var(--sf-primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--sf-primary);
+  border-color: var(--sf-primary);
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--sf-dark);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.brand-logo i {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--sf-primary), var(--sf-secondary));
+  border-radius: 12px;
+}
+
+.public-navbar {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--sf-border);
+  backdrop-filter: blur(12px);
+}
+
+.public-navbar .nav-link {
+  color: #334155;
+  font-weight: 500;
+}
+
+.public-navbar .nav-link.active,
+.public-navbar .nav-link:hover {
+  color: var(--sf-primary);
+}
+
+.hero-section {
+  overflow: hidden;
+  padding: 7rem 0 6rem;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(124, 58, 237, 0.2), transparent 28%),
+    radial-gradient(circle at 15% 80%, rgba(6, 182, 212, 0.15), transparent 25%),
+    linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.hero-title {
+  max-width: 760px;
+  font-size: clamp(2.5rem, 6vw, 4.8rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+}
+
+.gradient-text {
+  color: transparent;
+  background: linear-gradient(90deg, var(--sf-primary), var(--sf-secondary));
+  background-clip: text;
+}
+
+.hero-panel {
+  position: relative;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgba(79, 70, 229, 0.18);
+}
+
+.metric-card,
+.feature-card,
+.placeholder-card {
+  height: 100%;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--sf-border);
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.05);
+}
+
+.feature-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  color: var(--sf-primary);
+  background: #eef2ff;
+  border-radius: 15px;
+  font-size: 1.4rem;
+}
+
+.page-banner {
+  padding: 4.5rem 0;
+  background: linear-gradient(135deg, #eef2ff, #faf5ff);
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--sf-light);
+}
+
+.sidebar {
+  position: fixed;
+  z-index: 1030;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 260px;
+  padding: 1.25rem;
+  overflow-y: auto;
+  color: #e2e8f0;
+  background: #111827;
+  transition: transform 0.25s ease;
+}
+
+.sidebar .brand-logo {
+  color: #fff;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  color: #fff;
+  background: linear-gradient(90deg, var(--sf-primary), var(--sf-secondary));
+}
+
+.portal-main {
+  min-height: 100vh;
+  margin-left: 260px;
+}
+
+.portal-topbar {
+  position: sticky;
+  z-index: 1020;
+  top: 0;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--sf-border);
+  backdrop-filter: blur(12px);
+}
+
+.portal-content {
+  padding: 1.5rem;
+}
+
+.footer {
+  color: #cbd5e1;
+  background: #0f172a;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .portal-main {
+    margin-left: 0;
+  }
+
+  .hero-section {
+    padding: 5rem 0 4rem;
+  }
+}
