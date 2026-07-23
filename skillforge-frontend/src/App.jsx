@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import PublicNavbar from "./components/layout/PublicNavbar";
 import PublicFooter from "./components/layout/PublicFooter";
 import HomePage from "./pages/public/HomePage";
+import CoursesPage from "./pages/public/CoursesPage";
 import ComingSoonPage from "./pages/public/ComingSoonPage";
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
 
-        <Route path="/courses" element={<ComingSoonPage />} />
+        <Route path="/courses" element={<CoursesPage />} />
         <Route path="/courses/:courseId" element={<ComingSoonPage />} />
         <Route path="/categories" element={<ComingSoonPage />} />
         <Route path="/instructors" element={<ComingSoonPage />} />

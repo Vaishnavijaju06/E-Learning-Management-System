@@ -53,3 +53,17 @@ a {
 .section-light {
   background-color: var(--skillforge-light);
 }
+.course-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 1rem 2rem rgba(33, 37, 41, 0.12) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--skillforge-primary);
+  box-shadow: 0 0 0 0.2rem rgba(91, 77, 247, 0.15);
+}
