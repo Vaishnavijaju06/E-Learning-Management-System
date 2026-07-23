@@ -1,0 +1,55 @@
+:root {
+  --skillforge-primary: #5b4df7;
+  --skillforge-secondary: #7c3aed;
+  --skillforge-dark: #172033;
+  --skillforge-light: #f7f8fc;
+  --skillforge-text: #49536a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--skillforge-dark);
+  background-color: #ffffff;
+}
+
+a {
+  text-decoration: none;
+}
+
+.text-primary-custom {
+  color: var(--skillforge-primary);
+}
+
+.btn-primary-custom {
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--skillforge-primary),
+    var(--skillforge-secondary)
+  );
+  border: none;
+}
+
+.btn-primary-custom:hover {
+  color: white;
+  background: linear-gradient(135deg, #4939ea, #6728d9);
+  transform: translateY(-1px);
+}
+
+.section-padding {
+  padding: 80px 0;
+}
+
+.section-light {
+  background-color: var(--skillforge-light);
+}
