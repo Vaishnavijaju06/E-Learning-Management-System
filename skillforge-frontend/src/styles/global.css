@@ -66,6 +66,11 @@ a {
 .form-select:focus {
   border-color: var(--skillforge-primary);
   box-shadow: 0 0 0 0.2rem rgba(91, 77, 247, 0.15);
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> 6ab8aaf (Updated App and global styles)
 }
 
 .dashboard-placeholder-icon {
@@ -280,6 +285,7 @@ a {
     flex-wrap: wrap;
   }
 }
+<<<<<<< HEAD
 .student-course-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -339,4 +345,150 @@ a {
     max-height: none;
     position: static;
   }
+=======
+
+.quiz-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quiz-card:hover {
+  transform: translateY(-4px);
+}
+
+.quiz-card-icon {
+  width: 62px;
+  height: 62px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(79, 70, 229, 0.12);
+  color: var(--skillforge-primary);
+  font-size: 1.8rem;
+}
+
+.quiz-timer {
+  min-width: 120px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: var(--skillforge-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.quiz-timer.danger {
+  background: #fee2e2;
+  color: #dc3545;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 2px solid #e8ebf1;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.quiz-option:hover {
+  border-color: var(--skillforge-primary);
+  background: #f8f7ff;
+}
+
+.quiz-option.selected {
+  border-color: var(--skillforge-primary);
+  background: rgba(79, 70, 229, 0.1);
+}
+
+.quiz-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--skillforge-primary);
+}
+
+.quiz-question-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.quiz-question-number {
+  aspect-ratio: 1;
+  border: 1px solid #d9dde6;
+  border-radius: 9px;
+  background: white;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.quiz-question-number.answered {
+  border-color: #198754;
+  background: #d1e7dd;
+  color: #146c43;
+}
+
+.quiz-question-number.current {
+  border-color: var(--skillforge-primary);
+  background: var(--skillforge-primary);
+  color: white;
+}
+
+.quiz-result-icon {
+  width: 90px;
+  height: 90px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2.7rem;
+}
+
+.quiz-result-icon.passed {
+  background: #d1e7dd;
+  color: #198754;
+}
+
+.quiz-result-icon.failed {
+  background: #f8d7da;
+  color: #dc3545;
+}
+
+.quiz-score-circle {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 10px solid rgba(79, 70, 229, 0.15);
+  border-top-color: var(--skillforge-primary);
+  border-radius: 50%;
+  color: var(--skillforge-primary);
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.result-stat {
+  height: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f7f8fc;
+}
+
+.result-stat strong,
+.result-stat span {
+  display: block;
+}
+
+.result-stat strong {
+  font-size: 1.5rem;
+}
+
+.result-stat span {
+  color: #6c757d;
+>>>>>>> Stashed changes
+>>>>>>> 6ab8aaf (Updated App and global styles)
 }
