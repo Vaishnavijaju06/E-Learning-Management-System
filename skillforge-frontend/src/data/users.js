@@ -9,7 +9,7 @@ export const users = [
     phone: "9876543210",
     profilePicture: "",
   },
-  {
+  { 
     id: 2,
     firstName: "Rahul",
     lastName: "Sharma",

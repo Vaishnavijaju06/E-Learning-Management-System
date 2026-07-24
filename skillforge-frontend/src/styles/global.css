@@ -76,3 +76,207 @@ a {
 .input-group .form-control.is-invalid {
   z-index: 1;
 }
+
+.student-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.student-sidebar {
+  width: 270px;
+  min-width: 270px;
+  min-height: 100vh;
+  background: #171a2b;
+  color: white;
+  flex-direction: column;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1030;
+  overflow-y: auto;
+}
+
+.student-main {
+  flex-grow: 1;
+  min-width: 0;
+  margin-left: 270px;
+}
+
+.student-content {
+  min-height: calc(100vh - 80px);
+}
+
+.student-logo-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--skillforge-primary);
+}
+
+.student-sidebar-label {
+  margin: 12px 12px 8px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08rem;
+}
+
+.student-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.student-nav-link:hover,
+.student-nav-link.active {
+  color: white;
+  background: var(--skillforge-primary);
+}
+
+.student-help-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.student-header {
+  z-index: 1020;
+}
+
+.student-avatar {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--skillforge-primary);
+  color: white;
+  font-weight: 700;
+}
+
+.student-welcome-card {
+  background: linear-gradient(
+    135deg,
+    var(--skillforge-primary),
+    #292179
+  );
+}
+
+.dashboard-stat-icon,
+.enrolled-course-icon,
+.upcoming-lesson-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 14px;
+}
+
+.dashboard-stat-icon {
+  width: 58px;
+  height: 58px;
+  font-size: 1.5rem;
+}
+
+.enrolled-course-icon {
+  width: 58px;
+  height: 58px;
+  font-size: 1.6rem;
+}
+
+.student-course-progress {
+  height: 8px;
+}
+
+.upcoming-lesson-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #edf0f4;
+  border-radius: 14px;
+}
+
+.upcoming-lesson-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+}
+
+.activity-timeline {
+  position: relative;
+}
+
+.activity-item {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 22px;
+}
+
+.activity-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #f3f5f8;
+}
+
+.student-mobile-sidebar {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+}
+
+.student-sidebar-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.student-mobile-sidebar-panel {
+  position: relative;
+  width: min(290px, 85vw);
+  height: 100%;
+}
+
+.student-sidebar-close {
+  position: absolute;
+  top: 12px;
+  right: -52px;
+  z-index: 2;
+}
+
+@media (max-width: 991.98px) {
+  .student-main {
+    margin-left: 0;
+  }
+
+  .student-mobile-sidebar .student-sidebar {
+    display: flex;
+    position: static;
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .upcoming-lesson-item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
