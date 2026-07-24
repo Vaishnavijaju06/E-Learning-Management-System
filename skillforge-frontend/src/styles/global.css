@@ -280,3 +280,63 @@ a {
     flex-wrap: wrap;
   }
 }
+.student-course-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.student-course-card:hover {
+  transform: translateY(-4px);
+}
+
+.student-course-cover {
+  width: 72px;
+  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  font-size: 2rem;
+}
+
+.lesson-reading-content {
+  min-height: 360px;
+  padding: 48px 24px;
+  border-radius: 14px;
+  background: #f5f7fb;
+  text-align: center;
+}
+
+.course-curriculum {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  position: sticky;
+  top: 100px;
+}
+
+.lesson-navigation-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #555b66;
+}
+
+.lesson-navigation-item:hover {
+  background: #f4f6fa;
+}
+
+.lesson-navigation-item.active {
+  color: var(--skillforge-primary);
+  background: rgba(79, 70, 229, 0.1);
+}
+
+@media (max-width: 1199.98px) {
+  .course-curriculum {
+    max-height: none;
+    position: static;
+  }
+}

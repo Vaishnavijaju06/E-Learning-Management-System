@@ -23,6 +23,9 @@ import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboardPage from "./pages/student/StudentDashboardPage";
 import StudentPlaceholderPage from "./pages/student/StudentPlaceholderPage";
 
+import StudentCoursesPage from "./pages/student/StudentCoursesPage";
+import CourseLearningPage from "./pages/student/CourseLearningPage";
+
 function App() {
   const location = useLocation();
 
@@ -77,25 +80,12 @@ function App() {
             element={<StudentDashboardPage />}
           />
 
-          <Route
-            path="courses"
-            element={
-              <StudentPlaceholderPage
-                title="My Courses"
-                description="Your enrolled courses will appear here."
-              />
-            }
-          />
+          <Route path="courses" element={<StudentCoursesPage />} />
 
           <Route
-            path="courses/:courseId/learn"
-            element={
-              <StudentPlaceholderPage
-                title="Course Learning"
-                description="The lesson player will be developed in the next steps."
-              />
-            }
-          />
+  path="courses/:courseId/learn"
+  element={<CourseLearningPage />}
+/>
 
           <Route
             path="wishlist"
