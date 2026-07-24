@@ -67,3 +67,12 @@ a {
   border-color: var(--skillforge-primary);
   box-shadow: 0 0 0 0.2rem rgba(91, 77, 247, 0.15);
 }
+
+.dashboard-placeholder-icon {
+  width: 90px;
+  height: 90px;
+}
+
+.input-group .form-control.is-invalid {
+  z-index: 1;
+}

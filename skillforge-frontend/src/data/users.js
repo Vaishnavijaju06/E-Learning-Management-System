@@ -1,0 +1,32 @@
+export const users = [
+  {
+    id: 1,
+    firstName: "sumit",
+    lastName: "shrivas",
+    email: "student@skillforge.com",
+    password: "Student@123",
+    role: "STUDENT",
+    phone: "9876543210",
+    profilePicture: "",
+  },
+  {
+    id: 2,
+    firstName: "Rahul",
+    lastName: "Sharma",
+    email: "instructor@skillforge.com",
+    password: "Instructor@123",
+    role: "INSTRUCTOR",
+    phone: "9876500001",
+    profilePicture: "",
+  },
+  {
+    id: 3,
+    firstName: "Admin",
+    lastName: "User",
+    email: "admin@skillforge.com",
+    password: "Admin@123",
+    role: "ADMIN",
+    phone: "9876500002",
+    profilePicture: "",
+  },
+];
