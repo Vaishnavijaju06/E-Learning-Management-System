@@ -8,12 +8,15 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App";
+import { AuthProvider } from "./context/AuthContext";
 import "./styles/global.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+         <App />
+      </AuthProvider>  
     </BrowserRouter>
   </React.StrictMode>
 );

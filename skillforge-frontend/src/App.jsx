@@ -1,37 +1,168 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import PublicNavbar from "./components/layout/PublicNavbar";
 import PublicFooter from "./components/layout/PublicFooter";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+
 import HomePage from "./pages/public/HomePage";
 import CoursesPage from "./pages/public/CoursesPage";
-import ComingSoonPage from "./pages/public/ComingSoonPage";
 import CourseDetailsPage from "./pages/public/CourseDetailsPage";
+import ComingSoonPage from "./pages/public/ComingSoonPage";
+
+import LoginPage from "./pages/auth/LoginPage";
+import UnauthorizedPage from "./pages/common/UnauthorizedPage";
+import DashboardPlaceholder from "./pages/dashboard/DashboardPlaceholder";
+
+import StudentLayout from "./layouts/StudentLayout";
+import StudentDashboardPage from "./pages/student/StudentDashboardPage";
+import StudentPlaceholderPage from "./pages/student/StudentPlaceholderPage";
+
+import StudentCoursesPage from "./pages/student/StudentCoursesPage";
+import CourseLearningPage from "./pages/student/CourseLearningPage";
+
 function App() {
+  const location = useLocation();
+
+  const isDashboardRoute =
+    location.pathname.startsWith("/student") ||
+    location.pathname.startsWith("/instructor") ||
+    location.pathname.startsWith("/admin");
+
   return (
     <>
-      <PublicNavbar />
+      {!isDashboardRoute && <PublicNavbar />}
 
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<HomePage />} />
-
         <Route path="/courses" element={<CoursesPage />} />
-        <Route path="/courses/:courseId" element={<CourseDetailsPage />}/>
+        <Route
+          path="/courses/:courseId"
+          element={<CourseDetailsPage />}
+        />
+
         <Route path="/categories" element={<ComingSoonPage />} />
         <Route path="/instructors" element={<ComingSoonPage />} />
         <Route path="/about" element={<ComingSoonPage />} />
         <Route path="/contact" element={<ComingSoonPage />} />
         <Route path="/faq" element={<ComingSoonPage />} />
 
-        <Route path="/login" element={<ComingSoonPage />} />
+        {/* Authentication routes */}
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<ComingSoonPage />} />
-        <Route path="/forgot-password" element={<ComingSoonPage />} />
+        <Route
+          path="/forgot-password"
+          element={<ComingSoonPage />}
+        />
+
+        {/* Student portal */}
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
+              <StudentLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            index
+            element={<Navigate to="dashboard" replace />}
+          />
+
+          <Route
+            path="dashboard"
+            element={<StudentDashboardPage />}
+          />
+
+          <Route path="courses" element={<StudentCoursesPage />} />
+
+          <Route
+  path="courses/:courseId/learn"
+  element={<CourseLearningPage />}
+/>
+
+          <Route
+            path="wishlist"
+            element={
+              <StudentPlaceholderPage
+                title="My Wishlist"
+                description="Your saved courses will appear here."
+              />
+            }
+          />
+
+          <Route
+            path="quizzes"
+            element={
+              <StudentPlaceholderPage
+                title="My Quizzes"
+                description="Available and completed quizzes will appear here."
+              />
+            }
+          />
+
+          <Route
+            path="certificates"
+            element={
+              <StudentPlaceholderPage
+                title="My Certificates"
+                description="Your earned certificates will appear here."
+              />
+            }
+          />
+
+          <Route
+            path="profile"
+            element={
+              <StudentPlaceholderPage
+                title="Student Profile"
+                description="Profile management will be added shortly."
+              />
+            }
+          />
+        </Route>
+
+        {/* Instructor portal */}
+        <Route
+          path="/instructor/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
+              <DashboardPlaceholder title="Instructor Dashboard" />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin portal */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <DashboardPlaceholder title="Admin Dashboard" />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Common routes */}
+        <Route
+          path="/unauthorized"
+          element={<UnauthorizedPage />}
+        />
 
         <Route path="/404" element={<ComingSoonPage />} />
-        <Route path="*" element={<Navigate to="/404" replace />} />
+
+        <Route
+          path="*"
+          element={<Navigate to="/404" replace />}
+        />
       </Routes>
 
-      <PublicFooter />
+      {!isDashboardRoute && <PublicFooter />}
 
       <ToastContainer
         position="top-right"
