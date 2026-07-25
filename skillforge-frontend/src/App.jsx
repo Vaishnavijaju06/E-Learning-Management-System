@@ -1,9 +1,5 @@
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+
 import { ToastContainer } from "react-toastify";
 
 import PublicNavbar from "./components/layout/PublicNavbar";
@@ -12,6 +8,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import HomePage from "./pages/public/HomePage";
 import CoursesPage from "./pages/public/CoursesPage";
+
 import CourseDetailsPage from "./pages/public/CourseDetailsPage";
 import ComingSoonPage from "./pages/public/ComingSoonPage";
 
@@ -26,6 +23,11 @@ import StudentWishlistPage from "./pages/student/StudentWishlistPage";
 
 import StudentCoursesPage from "./pages/student/StudentCoursesPage";
 import CourseLearningPage from "./pages/student/CourseLearningPage";
+
+import StudentQuizzesPage from "./pages/student/StudentQuizzesPage";
+import QuizAttemptPage from "./pages/student/QuizAttemptPage";
+import QuizResultPage from "./pages/student/QuizResultPage";
+import QuizHistoryPage from "./pages/student/QuizHistoryPage";
 
 function App() {
   const location = useLocation();
@@ -42,11 +44,12 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<HomePage />} />
+
         <Route path="/courses" element={<CoursesPage />} />
-        <Route
-          path="/courses/:courseId"
-          element={<CourseDetailsPage />}
-        />
+        <Route path="/courses/:courseId" element={<CourseDetailsPage />} />
+
+        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/courses/:courseId" element={<CourseDetailsPage />} />
 
         <Route path="/categories" element={<ComingSoonPage />} />
         <Route path="/instructors" element={<ComingSoonPage />} />
@@ -57,10 +60,8 @@ function App() {
         {/* Authentication routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<ComingSoonPage />} />
-        <Route
-          path="/forgot-password"
-          element={<ComingSoonPage />}
-        />
+
+        <Route path="/forgot-password" element={<ComingSoonPage />} />
 
         {/* Student portal */}
         <Route
@@ -71,37 +72,32 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route
-            index
-            element={<Navigate to="dashboard" replace />}
-          />
+          <Route index element={<Navigate to="dashboard" replace />} />
 
-          <Route
-            path="dashboard"
-            element={<StudentDashboardPage />}
-          />
+          <Route path="dashboard" element={<StudentDashboardPage />} />
 
           <Route path="courses" element={<StudentCoursesPage />} />
 
           <Route
-  path="courses/:courseId/learn"
-  element={<CourseLearningPage />}
-/>
+            path="courses/:courseId/learn"
+            element={<CourseLearningPage />}
+          />
 
          <Route
   path="wishlist"
   element={<StudentWishlistPage />}
 />
 
+          <Route path="quizzes" element={<StudentQuizzesPage />} />
+
+          <Route path="quizzes/:quizId/attempt" element={<QuizAttemptPage />} />
+
           <Route
-            path="quizzes"
-            element={
-              <StudentPlaceholderPage
-                title="My Quizzes"
-                description="Available and completed quizzes will appear here."
-              />
-            }
+            path="quizzes/result/:attemptId"
+            element={<QuizResultPage />}
           />
+
+          <Route path="quizzes/history" element={<QuizHistoryPage />} />
 
           <Route
             path="certificates"
@@ -145,26 +141,122 @@ function App() {
         />
 
         {/* Common routes */}
-        <Route
-          path="/unauthorized"
-          element={<UnauthorizedPage />}
-        />
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         <Route path="/404" element={<ComingSoonPage />} />
 
+        <Route path="*" element={<Navigate to="/404" replace />} />
+
+        <Route path="/forgot-password" element={<ComingSoonPage />} />
+
+        <Route path="/404" element={<ComingSoonPage />} />
+
+        {/* Student portal */}
         <Route
-          path="*"
-          element={<Navigate to="/404" replace />}
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
+              <StudentLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+
+          <Route path="dashboard" element={<StudentDashboardPage />} />
+
+          <Route
+            path="courses"
+            element={
+              <StudentPlaceholderPage
+                title="My Courses"
+                description="Your enrolled courses will appear here."
+              />
+            }
+          />
+
+          <Route
+            path="courses/:courseId/learn"
+            element={
+              <StudentPlaceholderPage
+                title="Course Learning"
+                description="The lesson player will be developed in the next steps."
+              />
+            }
+          />
+
+          <Route
+            path="wishlist"
+            element={
+              <StudentPlaceholderPage
+                title="My Wishlist"
+                description="Your saved courses will appear here."
+              />
+            }
+          />
+
+          <Route path="quizzes" element={<StudentQuizzesPage />} />
+
+          <Route path="quizzes/:quizId/attempt" element={<QuizAttemptPage />} />
+
+          <Route
+            path="quizzes/result/:attemptId"
+            element={<QuizResultPage />}
+          />
+
+          <Route path="quizzes/history" element={<QuizHistoryPage />} />
+
+          <Route
+            path="certificates"
+            element={
+              <StudentPlaceholderPage
+                title="My Certificates"
+                description="Your earned certificates will appear here."
+              />
+            }
+          />
+
+          <Route
+            path="profile"
+            element={
+              <StudentPlaceholderPage
+                title="Student Profile"
+                description="Profile management will be added shortly."
+              />
+            }
+          />
+        </Route>
+
+        {/* Instructor portal */}
+        <Route
+          path="/instructor/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
+              <DashboardPlaceholder title="Instructor Dashboard" />
+            </ProtectedRoute>
+          }
         />
+
+        {/* Admin portal */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <DashboardPlaceholder title="Admin Dashboard" />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Common routes */}
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+        <Route path="/404" element={<ComingSoonPage />} />
+
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
 
       {!isDashboardRoute && <PublicFooter />}
 
-      <ToastContainer
-        position="top-right"
-        autoClose={2500}
-        theme="colored"
-      />
+      <ToastContainer position="top-right" autoClose={2500} theme="colored" />
     </>
   );
 }
