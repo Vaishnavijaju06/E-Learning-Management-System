@@ -12,22 +12,18 @@ function QuizAttemptPage() {
   const { quizId } = useParams();
   const navigate = useNavigate();
 
-  const quiz = studentQuizzes.find(
-    (item) => item.id === Number(quizId)
-  );
+  const quiz = studentQuizzes.find((item) => item.id === Number(quizId));
 
   const initialSeconds = quiz ? quiz.durationMinutes * 60 : 0;
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] =
-    useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [remainingSeconds, setRemainingSeconds] =
-    useState(initialSeconds);
+  const [remainingSeconds, setRemainingSeconds] = useState(initialSeconds);
   const [submitted, setSubmitted] = useState(false);
 
   const existingAttempts = useMemo(
     () => (quiz ? getQuizAttempts(quiz.id) : []),
-    [quiz]
+    [quiz],
   );
 
   const submitQuiz = () => {
@@ -75,12 +71,10 @@ function QuizAttemptPage() {
 
   const answeredCount = Object.keys(answers).length;
 
-  const formattedTime = `${String(
-    Math.floor(remainingSeconds / 60)
-  ).padStart(2, "0")}:${String(remainingSeconds % 60).padStart(
+  const formattedTime = `${String(Math.floor(remainingSeconds / 60)).padStart(
     2,
-    "0"
-  )}`;
+    "0",
+  )}:${String(remainingSeconds % 60).padStart(2, "0")}`;
 
   const handleAnswer = (questionId, optionId) => {
     setAnswers((currentAnswers) => ({
@@ -90,8 +84,7 @@ function QuizAttemptPage() {
   };
 
   const handleManualSubmit = () => {
-    const unansweredCount =
-      quiz.questions.length - answeredCount;
+    const unansweredCount = quiz.questions.length - answeredCount;
 
     const message =
       unansweredCount > 0
@@ -109,16 +102,12 @@ function QuizAttemptPage() {
         <div className="card-body p-3 p-md-4">
           <div className="d-flex flex-wrap justify-content-between gap-3">
             <div>
-              <span className="text-secondary">
-                {quiz.courseTitle}
-              </span>
+              <span className="text-secondary">{quiz.courseTitle}</span>
               <h2 className="fw-bold mb-0">{quiz.title}</h2>
             </div>
 
             <div
-              className={`quiz-timer ${
-                remainingSeconds <= 60 ? "danger" : ""
-              }`}
+              className={`quiz-timer ${remainingSeconds <= 60 ? "danger" : ""}`}
             >
               <i className="bi bi-clock me-2"></i>
               {formattedTime}
@@ -130,9 +119,7 @@ function QuizAttemptPage() {
               className="progress-bar"
               style={{
                 width: `${
-                  ((currentQuestionIndex + 1) /
-                    quiz.questions.length) *
-                  100
+                  ((currentQuestionIndex + 1) / quiz.questions.length) * 100
                 }%`,
               }}
             ></div>
@@ -145,36 +132,27 @@ function QuizAttemptPage() {
           <section className="card border-0 shadow-sm rounded-4">
             <div className="card-body p-4">
               <p className="text-primary fw-semibold">
-                Question {currentQuestionIndex + 1} of{" "}
-                {quiz.questions.length}
+                Question {currentQuestionIndex + 1} of {quiz.questions.length}
               </p>
 
-              <h3 className="fw-bold mb-4">
-                {currentQuestion.text}
-              </h3>
+              <h3 className="fw-bold mb-4">{currentQuestion.text}</h3>
 
               <div className="d-grid gap-3">
                 {currentQuestion.options.map((option) => {
                   const selected =
-                    Number(answers[currentQuestion.id]) ===
-                    option.id;
+                    Number(answers[currentQuestion.id]) === option.id;
 
                   return (
                     <label
                       key={option.id}
-                      className={`quiz-option ${
-                        selected ? "selected" : ""
-                      }`}
+                      className={`quiz-option ${selected ? "selected" : ""}`}
                     >
                       <input
                         type="radio"
                         name={`question-${currentQuestion.id}`}
                         checked={selected}
                         onChange={() =>
-                          handleAnswer(
-                            currentQuestion.id,
-                            option.id
-                          )
+                          handleAnswer(currentQuestion.id, option.id)
                         }
                       />
 
@@ -189,16 +167,13 @@ function QuizAttemptPage() {
                   type="button"
                   className="btn btn-outline-secondary"
                   disabled={currentQuestionIndex === 0}
-                  onClick={() =>
-                    setCurrentQuestionIndex((index) => index - 1)
-                  }
+                  onClick={() => setCurrentQuestionIndex((index) => index - 1)}
                 >
                   <i className="bi bi-arrow-left me-2"></i>
                   Previous
                 </button>
 
-                {currentQuestionIndex <
-                quiz.questions.length - 1 ? (
+                {currentQuestionIndex < quiz.questions.length - 1 ? (
                   <button
                     type="button"
                     className="btn btn-primary-custom"
@@ -237,8 +212,8 @@ function QuizAttemptPage() {
                       index === currentQuestionIndex
                         ? "current"
                         : answers[question.id]
-                        ? "answered"
-                        : ""
+                          ? "answered"
+                          : ""
                     }`}
                     onClick={() => setCurrentQuestionIndex(index)}
                   >

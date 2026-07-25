@@ -27,7 +27,7 @@ const navigationItems = [
     icon: "bi-award",
   },
   {
-    title: "Profile",
+    title: " My Profile",
     path: "/student/profile",
     icon: "bi-person",
   },

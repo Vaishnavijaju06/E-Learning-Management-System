@@ -2,9 +2,7 @@ const ATTEMPT_STORAGE_KEY = "skillforge-quiz-attempts";
 
 const getStoredAttempts = () => {
   try {
-    return (
-      JSON.parse(localStorage.getItem(ATTEMPT_STORAGE_KEY)) || []
-    );
+    return JSON.parse(localStorage.getItem(ATTEMPT_STORAGE_KEY)) || [];
   } catch {
     return [];
   }
@@ -16,21 +14,18 @@ export const getAllQuizAttempts = () => {
 
 export const getQuizAttempts = (quizId) => {
   return getStoredAttempts().filter(
-    (attempt) => attempt.quizId === Number(quizId)
+    (attempt) => attempt.quizId === Number(quizId),
   );
 };
 
 export const saveQuizAttempt = (quiz, answers) => {
   const correctAnswers = quiz.questions.filter(
-    (question) =>
-      Number(answers[question.id]) === question.correctOptionId
+    (question) => Number(answers[question.id]) === question.correctOptionId,
   ).length;
 
   const totalQuestions = quiz.questions.length;
 
-  const percentage = Math.round(
-    (correctAnswers / totalQuestions) * 100
-  );
+  const percentage = Math.round((correctAnswers / totalQuestions) * 100);
 
   const attempt = {
     id: Date.now(),
@@ -49,7 +44,7 @@ export const saveQuizAttempt = (quiz, answers) => {
 
   localStorage.setItem(
     ATTEMPT_STORAGE_KEY,
-    JSON.stringify([...attempts, attempt])
+    JSON.stringify([...attempts, attempt]),
   );
 
   return attempt;
@@ -57,6 +52,6 @@ export const saveQuizAttempt = (quiz, answers) => {
 
 export const getQuizAttemptById = (attemptId) => {
   return getStoredAttempts().find(
-    (attempt) => attempt.id === Number(attemptId)
+    (attempt) => attempt.id === Number(attemptId),
   );
 };

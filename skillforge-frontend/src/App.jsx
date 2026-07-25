@@ -28,6 +28,7 @@ import StudentQuizzesPage from "./pages/student/StudentQuizzesPage";
 import QuizAttemptPage from "./pages/student/QuizAttemptPage";
 import QuizResultPage from "./pages/student/QuizResultPage";
 import QuizHistoryPage from "./pages/student/QuizHistoryPage";
+import StudentProfilePage from "./pages/student/StudentProfilePage";
 
 function App() {
   const location = useLocation();
@@ -83,10 +84,7 @@ function App() {
             element={<CourseLearningPage />}
           />
 
-         <Route
-  path="wishlist"
-  element={<StudentWishlistPage />}
-/>
+          <Route path="wishlist" element={<StudentWishlistPage />} />
 
           <Route path="quizzes" element={<StudentQuizzesPage />} />
 
@@ -215,17 +213,9 @@ function App() {
             }
           />
 
-          <Route
-            path="profile"
-            element={
-              <StudentPlaceholderPage
-                title="Student Profile"
-                description="Profile management will be added shortly."
-              />
-            }
-          />
+          <Route path="profile" element={<StudentProfilePage />} />
+          
         </Route>
-
         {/* Instructor portal */}
         <Route
           path="/instructor/dashboard"
