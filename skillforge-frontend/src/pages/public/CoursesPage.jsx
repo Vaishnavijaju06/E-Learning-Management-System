@@ -2,6 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import CourseCard from "../../components/course/CourseCard";
 import { categories } from "../../data/courses";
 import courseService from "../../services/courseService";
+import { toast } from "react-toastify";
+
+import {
+  getWishlistCourseIds,
+  toggleCourseWishlist,
+} from "../../services/wishlistService";
 
 function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -13,6 +19,22 @@ function CoursesPage() {
   const [viewMode, setViewMode] = useState("grid");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+ const [wishlistCourseIds, setWishlistCourseIds] = useState(
+  () => getWishlistCourseIds()
+);
+
+const handleWishlist = (courseId) => {
+  const result = toggleCourseWishlist(courseId);
+
+  setWishlistCourseIds(result.wishlist);
+
+  if (result.added) {
+    toast.success("Course added to wishlist");
+  } else {
+    toast.info("Course removed from wishlist");
+  }
+};
 
   useEffect(() => {
     loadCourses();
@@ -308,7 +330,14 @@ function CoursesPage() {
                   className="col-md-6 col-xl-4"
                   key={course.id}
                 >
-                  <CourseCard course={course} viewMode="grid" />
+                  <CourseCard
+                    course={course}
+                    viewMode="grid"
+                    isWishlisted={wishlistCourseIds.includes(
+                      Number(course.id)
+                    )}
+                    onWishlist={handleWishlist}
+                  />
                 </div>
               ))}
             </div>
@@ -319,6 +348,10 @@ function CoursesPage() {
                   course={course}
                   viewMode="list"
                   key={course.id}
+                  isWishlisted={wishlistCourseIds.includes(
+                    Number(course.id)
+                  )}
+                  onWishlist={handleWishlist}
                 />
               ))}
             </div>

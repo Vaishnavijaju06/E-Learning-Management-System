@@ -340,3 +340,32 @@ a {
     position: static;
   }
 }
+
+.course-wishlist-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: #6c757d;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
+  transition: 0.2s ease;
+}
+
+.course-wishlist-button:hover {
+  color: #dc3545;
+  transform: scale(1.08);
+}
+
+.course-wishlist-button.active {
+  color: #dc3545;
+  background: #fff1f2;
+}
