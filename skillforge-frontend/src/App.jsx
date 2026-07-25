@@ -19,6 +19,7 @@ import DashboardPlaceholder from "./pages/dashboard/DashboardPlaceholder";
 import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboardPage from "./pages/student/StudentDashboardPage";
 import StudentPlaceholderPage from "./pages/student/StudentPlaceholderPage";
+import StudentWishlistPage from "./pages/student/StudentWishlistPage";
 
 import StudentCoursesPage from "./pages/student/StudentCoursesPage";
 import CourseLearningPage from "./pages/student/CourseLearningPage";
@@ -82,15 +83,10 @@ function App() {
             element={<CourseLearningPage />}
           />
 
-          <Route
-            path="wishlist"
-            element={
-              <StudentPlaceholderPage
-                title="My Wishlist"
-                description="Your saved courses will appear here."
-              />
-            }
-          />
+         <Route
+  path="wishlist"
+  element={<StudentWishlistPage />}
+/>
 
           <Route path="quizzes" element={<StudentQuizzesPage />} />
 

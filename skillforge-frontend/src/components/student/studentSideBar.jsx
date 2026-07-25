@@ -85,6 +85,11 @@ function StudentSidebar({ mobile = false, onNavigate }) {
           <i className="bi bi-search"></i>
           <span>Browse Courses</span>
         </NavLink>
+
+        <NavLink to="/student/wishlist" className="nav-link">
+  <i className="bi bi-heart me-2"></i>
+  Wishlist
+</NavLink>
       </nav>
 
       <div className="p-3 border-top border-secondary">

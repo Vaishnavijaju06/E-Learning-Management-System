@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
 
-function CourseCard({ course, viewMode = "grid" }) {
+function CourseCard({
+  course,
+  viewMode = "grid",
+  isWishlisted = false,
+  onWishlist,
+}) {
   const discount =
     course.originalPrice > course.price
       ? Math.round(
@@ -10,9 +15,41 @@ function CourseCard({ course, viewMode = "grid" }) {
         )
       : 0;
 
+  const handleWishlistClick = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (onWishlist) {
+    onWishlist(course.id);
+  }
+};
+
+  const wishlistButton = (
+  <button
+    type="button"
+    className={`course-wishlist-button ${
+      isWishlisted ? "active" : ""
+    }`}
+    onClick={handleWishlistClick}
+    aria-label={
+      isWishlisted
+        ? `Remove ${course.title} from wishlist`
+        : `Add ${course.title} to wishlist`
+    }
+  >
+    <i
+      className={`bi ${
+        isWishlisted ? "bi-heart-fill" : "bi-heart"
+      }`}
+    ></i>
+  </button>
+);
+
   if (viewMode === "list") {
     return (
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 position-relative">
+        {wishlistButton}
+
         <div className="row g-0">
           <div
             className={`col-md-4 bg-${course.color}-subtle text-${course.color} d-flex align-items-center justify-content-center py-5`}
@@ -61,7 +98,9 @@ function CourseCard({ course, viewMode = "grid" }) {
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   {course.price === 0 ? (
-                    <h5 className="text-success fw-bold mb-0">Free</h5>
+                    <h5 className="text-success fw-bold mb-0">
+                      Free
+                    </h5>
                   ) : (
                     <>
                       <h5 className="fw-bold d-inline me-2">
@@ -69,7 +108,10 @@ function CourseCard({ course, viewMode = "grid" }) {
                       </h5>
 
                       <span className="text-decoration-line-through text-secondary">
-                        ₹{course.originalPrice.toLocaleString("en-IN")}
+                        ₹
+                        {course.originalPrice.toLocaleString(
+                          "en-IN"
+                        )}
                       </span>
                     </>
                   )}
@@ -90,16 +132,18 @@ function CourseCard({ course, viewMode = "grid" }) {
   }
 
   return (
-    <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden course-card">
+    <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden course-card position-relative">
+      {wishlistButton}
+
       <div
         className={`bg-${course.color}-subtle text-${course.color} text-center py-5 position-relative`}
       >
         <i className={`bi ${course.icon} display-2`}></i>
 
         {discount > 0 && (
-          <span className="badge bg-danger position-absolute top-0 end-0 m-3">
-            {discount}% OFF
-          </span>
+          <span className="badge bg-danger position-absolute top-0 start-0 m-3">
+  {discount}% OFF
+</span>
         )}
       </div>
 
@@ -142,7 +186,9 @@ function CourseCard({ course, viewMode = "grid" }) {
         <div className="d-flex justify-content-between align-items-center">
           <div>
             {course.price === 0 ? (
-              <h5 className="text-success fw-bold mb-0">Free</h5>
+              <h5 className="text-success fw-bold mb-0">
+                Free
+              </h5>
             ) : (
               <>
                 <h5 className="fw-bold mb-0">
