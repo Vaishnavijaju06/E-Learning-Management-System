@@ -534,3 +534,72 @@ a {
   height: 100%;
   object-fit: cover;
 }
+
+.settings-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.settings-switch-row .form-switch {
+  flex-shrink: 0;
+}
+
+.settings-switch-row .form-check-input {
+  width: 2.8rem;
+  height: 1.4rem;
+  cursor: pointer;
+}
+
+.active-session-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  background: #f8f9fa;
+}
+
+.active-session-icon {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #e0e7ff;
+  color: var(--skillforge-primary);
+  font-size: 1.4rem;
+}
+
+.active-session-card strong,
+.active-session-card span {
+  display: block;
+}
+
+.active-session-card div span {
+  margin-top: 3px;
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 576px) {
+  .settings-switch-row {
+    align-items: flex-start;
+  }
+
+  .active-session-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .active-session-card > .badge {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
