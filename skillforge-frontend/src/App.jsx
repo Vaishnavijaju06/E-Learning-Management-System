@@ -36,6 +36,7 @@ import PaymentSuccessPage from "./pages/student/PaymentSuccessPage";
 import PaymentHistoryPage from "./pages/student/PaymentHistoryPage";
 
 import RegisterPage from "./pages/auth/RegisterPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 
 function App() {
   const location = useLocation();
@@ -74,7 +75,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/forgot-password"
-          element={<ComingSoonPage />}
+          element={<ForgotPasswordPage />}
         />
 
         {/* Student portal */}
