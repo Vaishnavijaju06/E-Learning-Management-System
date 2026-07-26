@@ -89,7 +89,10 @@ function StudentSidebar({ mobile = false, onNavigate }) {
           <span>Browse Courses</span>
         </NavLink>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> de72f2e7e95befe759763f606937d1f4e8e5d622
 
         
 
@@ -97,7 +100,10 @@ function StudentSidebar({ mobile = false, onNavigate }) {
           <i className="bi bi-heart me-2"></i>
           Wishlist
         </NavLink>
+<<<<<<< HEAD
 >>>>>>> develop
+=======
+>>>>>>> de72f2e7e95befe759763f606937d1f4e8e5d622
       </nav>
 
       <div className="p-3 border-top border-secondary">
