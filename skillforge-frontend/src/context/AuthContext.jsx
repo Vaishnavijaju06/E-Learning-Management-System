@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
     authService.getCurrentUser()
   );
 
+  // Login
   const login = async (email, password) => {
     const response = await authService.login(email, password);
     setUser(response.user);
@@ -21,6 +22,12 @@ export function AuthProvider({ children }) {
     return response.user;
   };
 
+  // Register
+  const register = async (formData) => {
+    return await authService.register(formData);
+  };
+
+  // Logout
   const logout = () => {
     authService.logout();
     setUser(null);
@@ -30,6 +37,7 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       login,
+      register,          // <-- Added
       logout,
       isAuthenticated: Boolean(user),
     }),
