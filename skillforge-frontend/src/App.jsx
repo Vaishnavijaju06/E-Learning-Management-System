@@ -20,6 +20,9 @@ import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboardPage from "./pages/student/StudentDashboardPage";
 import StudentPlaceholderPage from "./pages/student/StudentPlaceholderPage";
 import StudentWishlistPage from "./pages/student/StudentWishlistPage";
+import StudentCertificatesPage from "./pages/student/StudentCertificatesPage";
+import CertificateViewPage from "./pages/student/CertificateViewPage";
+import CertificateVerificationPage from "./pages/public/CertificateVerificationPage";
 
 import StudentCoursesPage from "./pages/student/StudentCoursesPage";
 import CourseLearningPage from "./pages/student/CourseLearningPage";
@@ -58,6 +61,10 @@ function App() {
         <Route path="/about" element={<ComingSoonPage />} />
         <Route path="/contact" element={<ComingSoonPage />} />
         <Route path="/faq" element={<ComingSoonPage />} />
+        <Route
+  path="/verify-certificate/:certificateNumber"
+  element={<CertificateVerificationPage />}
+/>
 
         {/* Authentication routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -99,14 +106,19 @@ function App() {
           <Route path="quizzes/history" element={<QuizHistoryPage />} />
 
           <Route
-            path="certificates"
-            element={
-              <StudentPlaceholderPage
-                title="My Certificates"
-                description="Your earned certificates will appear here."
-              />
-            }
-          />
+  path="certificates"
+  element={<StudentCertificatesPage />}
+/>
+
+<Route
+  path="certificates/:certificateNumber"
+  element={<CertificateViewPage />}
+/>
+
+{/* <Route
+  path="/verify-certificate/:certificateNumber"
+  element={<CertificateVerificationPage />}
+/> */}
 
           <Route path="profile" element={<StudentProfilePage />} />
 
