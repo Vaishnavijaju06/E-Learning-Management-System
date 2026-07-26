@@ -8,6 +8,7 @@ import {
   defaultCourseDetails,
 } from "../../data/courseDetails";
 import courseService from "../../services/courseService";
+import { isCourseEnrolled } from "../../services/enrollmentService";
 
 function CourseDetailsPage() {
   const { courseId } = useParams();
@@ -98,6 +99,12 @@ function CourseDetailsPage() {
   };
 
   const handleEnrollment = () => {
+    if (isCourseEnrolled(course.id)) {
+      toast.info("You have already purchased this course.");
+      navigate(`/student/courses/${course.id}/learn`);
+      return;
+    }
+
     localStorage.setItem(
       "skillforgeSelectedCourse",
       JSON.stringify(course)
@@ -105,12 +112,11 @@ function CourseDetailsPage() {
 
     if (course.price === 0) {
       toast.success("Course selected for free enrollment.");
-      navigate("/login");
+      navigate("/student/courses");
       return;
     }
 
-    toast.info("Please log in to continue with the purchase.");
-    navigate("/login");
+    navigate(`/student/checkout/${course.id}`);
   };
 
   if (loading) {
@@ -140,11 +146,13 @@ function CourseDetailsPage() {
   const discount =
     course.originalPrice > course.price
       ? Math.round(
-          ((course.originalPrice - course.price) /
-            course.originalPrice) *
-            100
-        )
+        ((course.originalPrice - course.price) /
+          course.originalPrice) *
+        100
+      )
       : 0;
+  const alreadyEnrolled =
+    course && isCourseEnrolled(course.id);
 
   return (
     <main className="section-light min-vh-100">
@@ -269,9 +277,8 @@ function CourseDetailsPage() {
                     >
                       <h2 className="accordion-header">
                         <button
-                          className={`accordion-button ${
-                            index !== 0 ? "collapsed" : ""
-                          }`}
+                          className={`accordion-button ${index !== 0 ? "collapsed" : ""
+                            }`}
                           type="button"
                           data-bs-toggle="collapse"
                           data-bs-target={`#section-${section.id}`}
@@ -288,9 +295,8 @@ function CourseDetailsPage() {
 
                       <div
                         id={`section-${section.id}`}
-                        className={`accordion-collapse collapse ${
-                          index === 0 ? "show" : ""
-                        }`}
+                        className={`accordion-collapse collapse ${index === 0 ? "show" : ""
+                          }`}
                         data-bs-parent="#courseCurriculum"
                       >
                         <div className="accordion-body">
@@ -363,24 +369,24 @@ function CourseDetailsPage() {
                   className="btn btn-primary-custom w-100 py-3 mt-4"
                   onClick={handleEnrollment}
                 >
-                  {course.price === 0
-                    ? "Enroll for Free"
-                    : "Buy This Course"}
+                  {alreadyEnrolled
+                    ? "Go to Course"
+                    : course.price === 0
+                      ? "Enroll for Free"
+                      : "Buy This Course"}
                 </button>
 
                 <button
                   type="button"
-                  className={`btn w-100 mt-2 ${
-                    wishlisted
-                      ? "btn-danger"
-                      : "btn-outline-danger"
-                  }`}
+                  className={`btn w-100 mt-2 ${wishlisted
+                    ? "btn-danger"
+                    : "btn-outline-danger"
+                    }`}
                   onClick={toggleWishlist}
                 >
                   <i
-                    className={`bi ${
-                      wishlisted ? "bi-heart-fill" : "bi-heart"
-                    } me-2`}
+                    className={`bi ${wishlisted ? "bi-heart-fill" : "bi-heart"
+                      } me-2`}
                   ></i>
 
                   {wishlisted
