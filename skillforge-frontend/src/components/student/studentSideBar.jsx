@@ -31,15 +31,18 @@ const navigationItems = [
     path: "/student/profile",
     icon: "bi-person",
   },
+  {
+    title: "Settings",
+    path: "/student/settings",
+    icon: "bi-gear",
+  },
 ];
 
 function StudentSidebar({ mobile = false, onNavigate }) {
   return (
     <aside
       className={
-        mobile
-          ? "student-sidebar h-100"
-          : "student-sidebar d-none d-lg-flex"
+        mobile ? "student-sidebar h-100" : "student-sidebar d-none d-lg-flex"
       }
     >
       <div className="p-4 border-bottom border-secondary">
@@ -85,6 +88,16 @@ function StudentSidebar({ mobile = false, onNavigate }) {
           <i className="bi bi-search"></i>
           <span>Browse Courses</span>
         </NavLink>
+<<<<<<< HEAD
+=======
+
+        
+
+        <NavLink to="/student/wishlist" className="nav-link">
+          <i className="bi bi-heart me-2"></i>
+          Wishlist
+        </NavLink>
+>>>>>>> develop
       </nav>
 
       <div className="p-3 border-top border-secondary">
@@ -95,10 +108,7 @@ function StudentSidebar({ mobile = false, onNavigate }) {
             Contact our student support team.
           </p>
 
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-light w-100"
-          >
+          <button type="button" className="btn btn-sm btn-outline-light w-100">
             Contact Support
           </button>
         </div>
