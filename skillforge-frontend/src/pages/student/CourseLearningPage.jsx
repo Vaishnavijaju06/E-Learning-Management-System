@@ -9,6 +9,7 @@ import {
   toggleLessonCompletion,
 } from "../../services/courseProgressService";
 
+import { isCourseEnrolled } from "../../services/enrollmentService";
 function CourseLearningPage() {
   const { courseId } = useParams();
 
@@ -216,9 +217,8 @@ function CourseLearningPage() {
                   >
                     <h2 className="accordion-header">
                       <button
-                        className={`accordion-button ${
-                          moduleIndex === 0 ? "" : "collapsed"
-                        }`}
+                        className={`accordion-button ${moduleIndex === 0 ? "" : "collapsed"
+                          }`}
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target={`#module-${module.id}`}
@@ -229,9 +229,8 @@ function CourseLearningPage() {
 
                     <div
                       id={`module-${module.id}`}
-                      className={`accordion-collapse collapse ${
-                        moduleIndex === 0 ? "show" : ""
-                      }`}
+                      className={`accordion-collapse collapse ${moduleIndex === 0 ? "show" : ""
+                        }`}
                     >
                       <div className="accordion-body p-2">
                         {module.lessons.map((lesson) => {
@@ -242,23 +241,21 @@ function CourseLearningPage() {
                             <button
                               key={lesson.id}
                               type="button"
-                              className={`lesson-navigation-item ${
-                                selectedLesson.id === lesson.id
+                              className={`lesson-navigation-item ${selectedLesson.id === lesson.id
                                   ? "active"
                                   : ""
-                              }`}
+                                }`}
                               onClick={() =>
                                 setSelectedLessonId(lesson.id)
                               }
                             >
                               <i
-                                className={`bi ${
-                                  completed
+                                className={`bi ${completed
                                     ? "bi-check-circle-fill text-success"
                                     : lesson.type === "VIDEO"
-                                    ? "bi-play-circle"
-                                    : "bi-file-text"
-                                }`}
+                                      ? "bi-play-circle"
+                                      : "bi-file-text"
+                                  }`}
                               ></i>
 
                               <span className="flex-grow-1 text-start">

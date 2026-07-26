@@ -76,6 +76,7 @@ function StudentSidebar({ mobile = false, onNavigate }) {
             <i className={`bi ${item.icon}`}></i>
             <span>{item.title}</span>
           </NavLink>
+          
         ))}
 
         <p className="student-sidebar-label mt-4">DISCOVER</p>
@@ -87,8 +88,12 @@ function StudentSidebar({ mobile = false, onNavigate }) {
         >
           <i className="bi bi-search"></i>
           <span>Browse Courses</span>
-        </NavLink>
 
+        </NavLink>
+          <NavLink to="/student/payments" className="nav-link">
+  <i className="bi bi-credit-card me-2"></i>
+  Payments
+</NavLink>
       </nav>
 
       <div className="p-3 border-top border-secondary">
