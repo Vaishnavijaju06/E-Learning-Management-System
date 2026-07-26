@@ -3,6 +3,7 @@ import { users as defaultUsers } from "../data/users";
 const AUTH_USER_KEY = "skillforgeAuthUser";
 const AUTH_TOKEN_KEY = "skillforgeToken";
 const REGISTERED_USERS_KEY = "skillforgeRegisteredUsers";
+const PASSWORD_RESETS_KEY = "skillforgePasswordResets";
 
 const delay = (milliseconds = 500) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -34,6 +35,24 @@ const getRegisteredUsers = () => {
     localStorage.removeItem(REGISTERED_USERS_KEY);
     return [];
   }
+};
+
+const getPasswordResets = () => {
+  try {
+    return JSON.parse(
+      localStorage.getItem(PASSWORD_RESETS_KEY) || "{}"
+    );
+  } catch {
+    localStorage.removeItem(PASSWORD_RESETS_KEY);
+    return {};
+  }
+};
+
+const savePasswordResets = (passwordResets) => {
+  localStorage.setItem(
+    PASSWORD_RESETS_KEY,
+    JSON.stringify(passwordResets)
+  );
 };
 
 const authService = {
@@ -74,37 +93,84 @@ const authService = {
     return removePassword(newUser);
   },
 
+  async checkEmailExists(email) {
+  await delay(300);
+
+  const registeredUsers = getRegisteredUsers();
+  const allUsers = [...defaultUsers, ...registeredUsers];
+  const normalizedEmail = normalizeEmail(email);
+
+  const userExists = allUsers.some(
+    (user) => normalizeEmail(user.email) === normalizedEmail
+  );
+
+  if (!userExists) {
+    throw new Error("No account was found with this email.");
+  }
+
+  return true;
+},
+async generateResetOtp(email) {
+  await this.checkEmailExists(email);
+
+  const otp = Math.floor(100000 + Math.random() * 900000)
+    .toString();
+
+  return {
+    email: normalizeEmail(email),
+    otp,
+    expiresAt: Date.now() + 5 * 60 * 1000,
+  };
+},
+async resetPassword(email, newPassword) {
+  await delay();
+
+  await this.checkEmailExists(email);
+
+  const normalizedEmail = normalizeEmail(email);
+  const passwordResets = getPasswordResets();
+
+  passwordResets[normalizedEmail] = newPassword;
+  savePasswordResets(passwordResets);
+
+  return true;
+},
+
   async login(email, password) {
-    await delay();
+  await delay();
 
-    const registeredUsers = getRegisteredUsers();
-    const allUsers = [...defaultUsers, ...registeredUsers];
+  const registeredUsers = getRegisteredUsers();
+  const allUsers = [...defaultUsers, ...registeredUsers];
+  const normalizedEmail = normalizeEmail(email);
 
-    const user = allUsers.find(
-      (item) =>
-        normalizeEmail(item.email) === normalizeEmail(email) &&
-        item.password === password
-    );
+  const passwordResets = getPasswordResets();
 
-    if (!user) {
-      throw new Error("Invalid email address or password.");
-    }
+  const user = allUsers.find(
+    (item) => normalizeEmail(item.email) === normalizedEmail
+  );
 
-    const safeUser = removePassword(user);
-    const dummyToken = `dummy-jwt-token-${user.id}-${Date.now()}`;
+  const currentPassword =
+    passwordResets[normalizedEmail] || user?.password;
 
-    localStorage.setItem(
-      AUTH_USER_KEY,
-      JSON.stringify(safeUser)
-    );
+  if (!user || currentPassword !== password) {
+    throw new Error("Invalid email address or password.");
+  }
 
-    localStorage.setItem(AUTH_TOKEN_KEY, dummyToken);
+  const safeUser = removePassword(user);
+  const dummyToken = `dummy-jwt-token-${user.id}-${Date.now()}`;
 
-    return {
-      user: safeUser,
-      token: dummyToken,
-    };
-  },
+  localStorage.setItem(
+    AUTH_USER_KEY,
+    JSON.stringify(safeUser)
+  );
+
+  localStorage.setItem(AUTH_TOKEN_KEY, dummyToken);
+
+  return {
+    user: safeUser,
+    token: dummyToken,
+  };
+},
 
   logout() {
     localStorage.removeItem(AUTH_USER_KEY);
