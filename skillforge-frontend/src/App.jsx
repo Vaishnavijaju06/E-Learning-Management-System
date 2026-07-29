@@ -39,6 +39,7 @@ import PaymentHistoryPage from "./pages/student/PaymentHistoryPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import InstructorDashboardPage from "./pages/instructor/InstructorDashboardPage";
+import InstructorCoursesPage from "./pages/instructor/InstructorCoursesPage";
 
 function App() {
   const location = useLocation();
@@ -190,11 +191,15 @@ function App() {
           />
           <Route
             path="courses"
-            element={<DashboardPlaceholder title="Instructor Courses" />}
+            element={<InstructorCoursesPage />}
           />
           <Route
             path="courses/create"
             element={<DashboardPlaceholder title="Create Course" />}
+          />
+          <Route
+            path="courses/:courseId/edit"
+            element={<DashboardPlaceholder title="Edit Course" />}
           />
           <Route
             path="students"
