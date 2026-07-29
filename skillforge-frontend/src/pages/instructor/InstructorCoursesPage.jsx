@@ -251,6 +251,15 @@ function InstructorCoursesPage() {
                   </div>
 
                   <div className="instructor-course-actions">
+                    {course.students > 0 && (
+                      <Link
+                        to={`/instructor/courses/${course.id}/students`}
+                        className="btn btn-sm btn-outline-info"
+                      >
+                        <i className="bi bi-people me-1"></i>
+                        Students
+                      </Link>
+                    )}
                     <Link
                       to={`/instructor/courses/${course.id}/curriculum`}
                       className="btn btn-sm btn-outline-secondary"
