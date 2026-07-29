@@ -50,7 +50,6 @@ import InstructorAssignmentsPage from "./pages/instructor/InstructorAssignmentsP
 import InstructorAssignmentFormPage from "./pages/instructor/InstructorAssignmentFormPage";
 import InstructorAssignmentSubmissionsPage from "./pages/instructor/InstructorAssignmentSubmissionsPage";
 import InstructorDiscussionsPage from "./pages/instructor/InstructorDiscussionsPage";
-import InstructorReviewsPage from "./pages/instructor/InstructorReviewsPage";
 
 function App() {
   const location = useLocation();
@@ -262,7 +261,7 @@ function App() {
           />
           <Route
             path="reviews"
-            element={<InstructorReviewsPage />}
+            element={<DashboardPlaceholder title="Course Reviews" />}
           />
           <Route
             path="earnings"
