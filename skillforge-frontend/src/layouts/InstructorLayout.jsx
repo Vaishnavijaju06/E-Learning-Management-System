@@ -1,46 +1,46 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import StudentHeader from "../components/student/studentHeader";
-import StudentSidebar from "../components/student/studentSideBar";
+import InstructorHeader from "../components/instructor/InstructorHeader";
+import InstructorSidebar from "../components/instructor/InstructorSidebar";
 
-function StudentLayout() {
+function InstructorLayout() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   return (
-    <div className="student-layout">
-      <StudentSidebar />
+    <div className="instructor-layout">
+      <InstructorSidebar />
 
-      <div className="student-main">
-        <StudentHeader
+      <div className="instructor-main">
+        <InstructorHeader
           onMenuClick={() => setShowMobileSidebar(true)}
         />
 
-        <div className="student-content">
+        <div className="instructor-content">
           <Outlet />
         </div>
       </div>
 
       {showMobileSidebar && (
-        <div className="student-mobile-sidebar d-lg-none">
+        <div className="instructor-mobile-sidebar d-lg-none">
           <button
             type="button"
-            className="student-sidebar-backdrop"
+            className="instructor-sidebar-backdrop"
             onClick={() => setShowMobileSidebar(false)}
-            aria-label="Close student menu"
+            aria-label="Close instructor menu"
           ></button>
 
-          <div className="student-mobile-sidebar-panel">
+          <div className="instructor-mobile-sidebar-panel">
             <button
               type="button"
-              className="btn btn-light student-sidebar-close"
+              className="btn btn-light instructor-sidebar-close"
               onClick={() => setShowMobileSidebar(false)}
-              aria-label="Close student menu"
+              aria-label="Close instructor menu"
             >
               <i className="bi bi-x-lg"></i>
             </button>
 
-            <StudentSidebar
+            <InstructorSidebar
               mobile
               onNavigate={() => setShowMobileSidebar(false)}
             />
@@ -51,4 +51,4 @@ function StudentLayout() {
   );
 }
 
-export default StudentLayout;
+export default InstructorLayout;
