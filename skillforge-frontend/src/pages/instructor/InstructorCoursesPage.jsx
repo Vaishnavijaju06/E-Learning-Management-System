@@ -252,6 +252,13 @@ function InstructorCoursesPage() {
 
                   <div className="instructor-course-actions">
                     <Link
+                      to={`/instructor/courses/${course.id}/curriculum`}
+                      className="btn btn-sm btn-outline-secondary"
+                    >
+                      <i className="bi bi-list-nested me-1"></i>
+                      Curriculum
+                    </Link>
+                    <Link
                       to={`/instructor/courses/${course.id}/edit`}
                       className="btn btn-sm btn-outline-primary"
                     >

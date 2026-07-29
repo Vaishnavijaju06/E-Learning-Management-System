@@ -1334,3 +1334,53 @@ a {
     position: static;
   }
 }
+
+.curriculum-lesson {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.curriculum-lesson-number {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #4f46e5;
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.curriculum-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.curriculum-modal {
+  width: min(100%, 620px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+@media (max-width: 576px) {
+  .curriculum-lesson {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .curriculum-lesson > .d-flex:last-child {
+    width: 100%;
+    padding-left: 44px;
+  }
+}

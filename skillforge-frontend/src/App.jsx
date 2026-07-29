@@ -41,6 +41,7 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import InstructorDashboardPage from "./pages/instructor/InstructorDashboardPage";
 import InstructorCoursesPage from "./pages/instructor/InstructorCoursesPage";
 import InstructorCourseFormPage from "./pages/instructor/InstructorCourseFormPage";
+import InstructorCurriculumPage from "./pages/instructor/InstructorCurriculumPage";
 
 function App() {
   const location = useLocation();
@@ -201,6 +202,10 @@ function App() {
           <Route
             path="courses/:courseId/edit"
             element={<InstructorCourseFormPage />}
+          />
+          <Route
+            path="courses/:courseId/curriculum"
+            element={<InstructorCurriculumPage />}
           />
           <Route
             path="students"
