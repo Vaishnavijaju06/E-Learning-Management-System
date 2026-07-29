@@ -122,6 +122,17 @@ const instructorCourseService = {
     return updatedCourses;
   },
 
+  updateLessonCount(courseId, lessonCount) {
+    const courses = readCourses();
+    const updatedCourses = courses.map((course) =>
+      course.id === Number(courseId)
+        ? { ...course, lessons: lessonCount, updatedAt: formatUpdatedDate() }
+        : course
+    );
+    saveCourses(updatedCourses);
+    return updatedCourses;
+  },
+
   deleteDraft(courseId) {
     const courses = readCourses();
     const selectedCourse = courses.find((course) => course.id === courseId);

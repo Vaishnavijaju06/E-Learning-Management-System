@@ -1258,6 +1258,74 @@ a {
   }
 }
 
+.instructor-student-table th {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.instructor-student-table td {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.student-avatar {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #4338ca;
+  background: #e0e7ff;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.student-avatar-lg {
+  width: 54px;
+  height: 54px;
+  font-size: 1rem;
+}
+
+.student-course-name {
+  max-width: 210px;
+}
+
+.student-progress {
+  height: 7px;
+  background: #e5e7eb;
+}
+
+.student-detail-modal {
+  width: min(100%, 720px);
+}
+
+.student-detail-stat {
+  height: 100%;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.student-detail-stat small,
+.student-detail-stat span {
+  display: block;
+  color: #64748b;
+}
+
+.student-detail-stat strong {
+  display: block;
+  margin: 6px 0 3px;
+  color: #0f172a;
+  font-size: 1.1rem;
+}
+
 .instructor-course-stat {
   width: 48px;
   height: 48px;
@@ -1332,5 +1400,55 @@ a {
 @media (max-width: 1199px) {
   .instructor-form-actions {
     position: static;
+  }
+}
+
+.curriculum-lesson {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.curriculum-lesson-number {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #4f46e5;
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.curriculum-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.curriculum-modal {
+  width: min(100%, 620px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+@media (max-width: 576px) {
+  .curriculum-lesson {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .curriculum-lesson > .d-flex:last-child {
+    width: 100%;
+    padding-left: 44px;
   }
 }

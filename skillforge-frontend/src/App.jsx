@@ -41,6 +41,11 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import InstructorDashboardPage from "./pages/instructor/InstructorDashboardPage";
 import InstructorCoursesPage from "./pages/instructor/InstructorCoursesPage";
 import InstructorCourseFormPage from "./pages/instructor/InstructorCourseFormPage";
+import InstructorCurriculumPage from "./pages/instructor/InstructorCurriculumPage";
+import InstructorStudentsPage from "./pages/instructor/InstructorStudentsPage";
+import InstructorQuizzesPage from "./pages/instructor/InstructorQuizzesPage";
+import InstructorQuizFormPage from "./pages/instructor/InstructorQuizFormPage";
+import InstructorQuizResultsPage from "./pages/instructor/InstructorQuizResultsPage";
 
 function App() {
   const location = useLocation();
@@ -203,12 +208,32 @@ function App() {
             element={<InstructorCourseFormPage />}
           />
           <Route
+            path="courses/:courseId/curriculum"
+            element={<InstructorCurriculumPage />}
+          />
+          <Route
             path="students"
-            element={<DashboardPlaceholder title="Course Students" />}
+            element={<InstructorStudentsPage />}
+          />
+          <Route
+            path="courses/:courseId/students"
+            element={<InstructorStudentsPage />}
           />
           <Route
             path="quizzes"
-            element={<DashboardPlaceholder title="Quiz Management" />}
+            element={<InstructorQuizzesPage />}
+          />
+          <Route
+            path="quizzes/create"
+            element={<InstructorQuizFormPage />}
+          />
+          <Route
+            path="quizzes/:quizId/edit"
+            element={<InstructorQuizFormPage />}
+          />
+          <Route
+            path="quizzes/:quizId/results"
+            element={<InstructorQuizResultsPage />}
           />
           <Route
             path="assignments"
