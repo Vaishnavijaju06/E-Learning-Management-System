@@ -49,6 +49,8 @@ import InstructorQuizResultsPage from "./pages/instructor/InstructorQuizResultsP
 import InstructorAssignmentsPage from "./pages/instructor/InstructorAssignmentsPage";
 import InstructorAssignmentFormPage from "./pages/instructor/InstructorAssignmentFormPage";
 import InstructorAssignmentSubmissionsPage from "./pages/instructor/InstructorAssignmentSubmissionsPage";
+import InstructorDiscussionsPage from "./pages/instructor/InstructorDiscussionsPage";
+import InstructorReviewsPage from "./pages/instructor/InstructorReviewsPage";
 
 function App() {
   const location = useLocation();
@@ -256,11 +258,11 @@ function App() {
           />
           <Route
             path="discussions"
-            element={<DashboardPlaceholder title="Course Discussions" />}
+            element={<InstructorDiscussionsPage />}
           />
           <Route
             path="reviews"
-            element={<DashboardPlaceholder title="Course Reviews" />}
+            element={<InstructorReviewsPage />}
           />
           <Route
             path="earnings"

@@ -1452,3 +1452,17 @@ a {
     padding-left: 44px;
   }
 }
+.instructor-discussion-list {
+  max-height: 620px;
+  overflow-y: auto;
+}
+
+.instructor-review-list {
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+.instructor-review-list .bi-star,
+.instructor-review-list .bi-star-fill {
+  margin-right: 2px;
+}
