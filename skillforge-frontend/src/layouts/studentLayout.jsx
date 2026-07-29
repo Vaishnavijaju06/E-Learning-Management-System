@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import StudentHeader from "../components/student/StudentHeader";
-import StudentSidebar from "../components/student/StudentSidebar";
+import StudentHeader from "../components/student/studentHeader";
+import StudentSidebar from "../components/student/studentSideBar";
 
 function StudentLayout() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);

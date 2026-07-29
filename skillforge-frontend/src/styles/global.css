@@ -1313,6 +1313,11 @@ a {
   gap: 8px;
 }
 
+.instructor-form-actions {
+  position: sticky;
+  top: 92px;
+}
+
 @media (max-width: 767px) {
   .instructor-course-row {
     grid-template-columns: auto minmax(0, 1fr);
@@ -1321,5 +1326,11 @@ a {
   .instructor-course-actions {
     grid-column: 1 / -1;
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 1199px) {
+  .instructor-form-actions {
+    position: static;
   }
 }

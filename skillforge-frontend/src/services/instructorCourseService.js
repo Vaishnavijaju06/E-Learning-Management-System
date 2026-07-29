@@ -23,9 +23,81 @@ const saveCourses = (courses) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
 };
 
+const formatUpdatedDate = () =>
+  new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
 const instructorCourseService = {
   getCourses() {
     return readCourses();
+  },
+
+  getCourseById(courseId) {
+    const numericCourseId = Number(courseId);
+    const course = readCourses().find(
+      (item) => item.id === numericCourseId
+    );
+
+    if (!course) {
+      throw new Error("Course not found.");
+    }
+
+    return course;
+  },
+
+  createCourse(courseData, status = "DRAFT") {
+    const courses = readCourses();
+    const nextId =
+      courses.length > 0
+        ? Math.max(...courses.map((course) => course.id)) + 1
+        : 101;
+
+    const newCourse = {
+      id: nextId,
+      ...courseData,
+      price: Number(courseData.price),
+      status,
+      students: 0,
+      lessons: 0,
+      rating: 0,
+      updatedAt: formatUpdatedDate(),
+      icon: courseData.icon || "bi-journal-richtext",
+      color: courseData.color || "primary",
+    };
+
+    saveCourses([newCourse, ...courses]);
+    return newCourse;
+  },
+
+  updateCourse(courseId, courseData, status) {
+    const numericCourseId = Number(courseId);
+    const courses = readCourses();
+    const selectedCourse = courses.find(
+      (course) => course.id === numericCourseId
+    );
+
+    if (!selectedCourse) {
+      throw new Error("Course not found.");
+    }
+
+    const updatedCourse = {
+      ...selectedCourse,
+      ...courseData,
+      price: Number(courseData.price),
+      status: status || selectedCourse.status,
+      updatedAt: formatUpdatedDate(),
+    };
+
+    saveCourses(
+      courses.map((course) =>
+        course.id === numericCourseId ? updatedCourse : course
+      )
+    );
+
+    return updatedCourse;
   },
 
   updateStatus(courseId, status) {
@@ -41,11 +113,7 @@ const instructorCourseService = {
         ? {
             ...course,
             status,
-            updatedAt: new Date().toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            }),
+            updatedAt: formatUpdatedDate(),
           }
         : course
     );

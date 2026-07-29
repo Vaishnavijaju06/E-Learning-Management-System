@@ -5,7 +5,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import PublicFooter from "./components/layout/PublicFooter";
 import PublicNavbar from "./components/layout/PublicNavbar";
 
-import StudentLayout from "./layouts/StudentLayout";
+import StudentLayout from "./layouts/studentLayout";
 import InstructorLayout from "./layouts/InstructorLayout";
 
 import UnauthorizedPage from "./pages/common/UnauthorizedPage";
@@ -40,6 +40,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import InstructorDashboardPage from "./pages/instructor/InstructorDashboardPage";
 import InstructorCoursesPage from "./pages/instructor/InstructorCoursesPage";
+import InstructorCourseFormPage from "./pages/instructor/InstructorCourseFormPage";
 
 function App() {
   const location = useLocation();
@@ -195,11 +196,11 @@ function App() {
           />
           <Route
             path="courses/create"
-            element={<DashboardPlaceholder title="Create Course" />}
+            element={<InstructorCourseFormPage />}
           />
           <Route
             path="courses/:courseId/edit"
-            element={<DashboardPlaceholder title="Edit Course" />}
+            element={<InstructorCourseFormPage />}
           />
           <Route
             path="students"
