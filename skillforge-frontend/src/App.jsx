@@ -6,6 +6,7 @@ import PublicFooter from "./components/layout/PublicFooter";
 import PublicNavbar from "./components/layout/PublicNavbar";
 
 import StudentLayout from "./layouts/StudentLayout";
+import InstructorLayout from "./layouts/InstructorLayout";
 
 import UnauthorizedPage from "./pages/common/UnauthorizedPage";
 import DashboardPlaceholder from "./pages/dashboard/DashboardPlaceholder";
@@ -37,6 +38,7 @@ import PaymentHistoryPage from "./pages/student/PaymentHistoryPage";
 
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import InstructorDashboardPage from "./pages/instructor/InstructorDashboardPage";
 
 function App() {
   const location = useLocation();
@@ -171,13 +173,62 @@ function App() {
 
         {/* Instructor portal */}
         <Route
-          path="/instructor/dashboard"
+          path="/instructor"
           element={
             <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
-              <DashboardPlaceholder title="Instructor Dashboard" />
+              <InstructorLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route
+            index
+            element={<Navigate to="dashboard" replace />}
+          />
+          <Route
+            path="dashboard"
+            element={<InstructorDashboardPage />}
+          />
+          <Route
+            path="courses"
+            element={<DashboardPlaceholder title="Instructor Courses" />}
+          />
+          <Route
+            path="courses/create"
+            element={<DashboardPlaceholder title="Create Course" />}
+          />
+          <Route
+            path="students"
+            element={<DashboardPlaceholder title="Course Students" />}
+          />
+          <Route
+            path="quizzes"
+            element={<DashboardPlaceholder title="Quiz Management" />}
+          />
+          <Route
+            path="assignments"
+            element={<DashboardPlaceholder title="Assignment Management" />}
+          />
+          <Route
+            path="discussions"
+            element={<DashboardPlaceholder title="Course Discussions" />}
+          />
+          <Route
+            path="reviews"
+            element={<DashboardPlaceholder title="Course Reviews" />}
+          />
+          <Route
+            path="earnings"
+            element={<DashboardPlaceholder title="Instructor Earnings" />}
+          />
+          <Route
+            path="profile"
+            element={<DashboardPlaceholder title="Instructor Profile" />}
+          />
+          <Route
+            path="settings"
+            element={<DashboardPlaceholder title="Instructor Settings" />}
+          />
+        </Route>
 
         {/* Admin portal */}
         <Route

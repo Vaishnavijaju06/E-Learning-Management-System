@@ -284,6 +284,180 @@ a {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.instructor-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.instructor-sidebar {
+  width: 270px;
+  min-width: 270px;
+  min-height: 100vh;
+  background: #171a2b;
+  color: white;
+  flex-direction: column;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1030;
+  overflow-y: auto;
+}
+
+.instructor-main {
+  flex-grow: 1;
+  min-width: 0;
+  margin-left: 270px;
+}
+
+.instructor-content {
+  min-height: calc(100vh - 80px);
+}
+
+.instructor-logo-icon,
+.instructor-stat-icon,
+.instructor-enrollment-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.instructor-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--skillforge-primary);
+}
+
+.instructor-sidebar-label {
+  margin: 18px 12px 8px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08rem;
+}
+
+.instructor-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.instructor-nav-link:hover,
+.instructor-nav-link.active {
+  color: white;
+  background: var(--skillforge-primary);
+}
+
+.instructor-tip-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.instructor-header {
+  z-index: 1020;
+}
+
+.instructor-avatar {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--skillforge-primary);
+  color: white;
+  font-weight: 700;
+}
+
+.instructor-welcome-card {
+  background: linear-gradient(
+    135deg,
+    var(--skillforge-primary),
+    #292179
+  );
+}
+
+.instructor-stat-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  font-size: 1.45rem;
+}
+
+.instructor-progress {
+  height: 7px;
+}
+
+.instructor-enrollment-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.instructor-enrollment-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.instructor-enrollment-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(91, 77, 247, 0.12);
+  color: var(--skillforge-primary);
+  font-weight: 700;
+}
+
+.instructor-mobile-sidebar {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+}
+
+.instructor-sidebar-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.instructor-mobile-sidebar-panel {
+  position: relative;
+  width: min(290px, 85vw);
+  height: 100%;
+}
+
+.instructor-sidebar-close {
+  position: absolute;
+  top: 12px;
+  right: -52px;
+  z-index: 2;
+}
+
+@media (max-width: 991.98px) {
+  .instructor-main {
+    margin-left: 0;
+  }
+
+  .instructor-mobile-sidebar .instructor-sidebar {
+    display: flex;
+    position: static;
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
 .student-course-card:hover {
   transform: translateY(-4px);
 }
