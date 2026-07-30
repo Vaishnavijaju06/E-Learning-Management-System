@@ -1452,3 +1452,7 @@ a {
     padding-left: 44px;
   }
 }
+.instructor-discussion-list {
+  max-height: 620px;
+  overflow-y: auto;
+}

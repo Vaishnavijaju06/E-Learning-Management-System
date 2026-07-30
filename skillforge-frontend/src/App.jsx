@@ -46,6 +46,10 @@ import InstructorStudentsPage from "./pages/instructor/InstructorStudentsPage";
 import InstructorQuizzesPage from "./pages/instructor/InstructorQuizzesPage";
 import InstructorQuizFormPage from "./pages/instructor/InstructorQuizFormPage";
 import InstructorQuizResultsPage from "./pages/instructor/InstructorQuizResultsPage";
+import InstructorAssignmentsPage from "./pages/instructor/InstructorAssignmentsPage";
+import InstructorAssignmentFormPage from "./pages/instructor/InstructorAssignmentFormPage";
+import InstructorAssignmentSubmissionsPage from "./pages/instructor/InstructorAssignmentSubmissionsPage";
+import InstructorDiscussionsPage from "./pages/instructor/InstructorDiscussionsPage";
 
 function App() {
   const location = useLocation();
@@ -237,11 +241,23 @@ function App() {
           />
           <Route
             path="assignments"
-            element={<DashboardPlaceholder title="Assignment Management" />}
+            element={<InstructorAssignmentsPage />}
+          />
+          <Route
+            path="assignments/create"
+            element={<InstructorAssignmentFormPage />}
+          />
+          <Route
+            path="assignments/:assignmentId/edit"
+            element={<InstructorAssignmentFormPage />}
+          />
+          <Route
+            path="assignments/:assignmentId/submissions"
+            element={<InstructorAssignmentSubmissionsPage />}
           />
           <Route
             path="discussions"
-            element={<DashboardPlaceholder title="Course Discussions" />}
+            element={<InstructorDiscussionsPage />}
           />
           <Route
             path="reviews"
