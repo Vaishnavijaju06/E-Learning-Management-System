@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title">
+  <title id="title">SkillForge course</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17205b"/>
+      <stop offset="1" stop-color="#5261d5"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#background)"/>
+  <circle cx="790" cy="105" r="150" fill="#ffc107" opacity=".18"/>
+  <circle cx="130" cy="500" r="210" fill="#ffffff" opacity=".07"/>
+  <path d="M310 178c74-28 139-18 170 6v215c-31-24-96-34-170-6V178Zm340 0c-74-28-139-18-170 6v215c31-24 96-34 170-6V178Z" fill="#fff" opacity=".95"/>
+  <path d="M480 184v215" stroke="#cad0ff" stroke-width="8"/>
+  <text x="480" y="470" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="38" font-weight="700">SKILLFORGE</text>
+</svg>

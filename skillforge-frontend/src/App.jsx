@@ -1,217 +1,110 @@
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes
+} from "react-router-dom";
 
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import PublicFooter from "./components/layout/PublicFooter";
-import PublicNavbar from "./components/layout/PublicNavbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "./layouts/AppLayout";
+import AdminManagePage from "./pages/AdminManagePage";
+import CertificateVerifyPage from "./pages/CertificateVerifyPage";
+import CertificatesPage from "./pages/CertificatesPage";
+import CourseBuilderPage from "./pages/CourseBuilderPage";
+import CourseDetailsPage from "./pages/CourseDetailsPage";
+import CoursesPage from "./pages/CoursesPage";
+import DashboardPage from "./pages/DashboardPage";
+import HomePage from "./pages/HomePage";
+import InstructorCoursesPage from "./pages/InstructorCoursesPage";
+import LearningPage from "./pages/LearningPage";
+import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ProfilePage from "./pages/ProfilePage";
+import RegisterPage from "./pages/RegisterPage";
+import StudentLearningPage from "./pages/StudentLearningPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import WishlistPage from "./pages/WishlistPage";
 
-import StudentLayout from "./layouts/StudentLayout";
-
-import UnauthorizedPage from "./pages/common/UnauthorizedPage";
-import DashboardPlaceholder from "./pages/dashboard/DashboardPlaceholder";
-
-import LoginPage from "./pages/auth/LoginPage";
-
-import CertificateVerificationPage from "./pages/public/CertificateVerificationPage";
-import ComingSoonPage from "./pages/public/ComingSoonPage";
-import CourseDetailsPage from "./pages/public/CourseDetailsPage";
-import CoursesPage from "./pages/public/CoursesPage";
-import HomePage from "./pages/public/HomePage";
-
-import CertificateViewPage from "./pages/student/CertificateViewPage";
-import CheckoutPage from "./pages/student/CheckoutPage";
-import CourseLearningPage from "./pages/student/CourseLearningPage";
-import QuizAttemptPage from "./pages/student/QuizAttemptPage";
-import QuizHistoryPage from "./pages/student/QuizHistoryPage";
-import QuizResultPage from "./pages/student/QuizResultPage";
-import StudentCertificatesPage from "./pages/student/StudentCertificatesPage";
-import StudentCoursesPage from "./pages/student/StudentCoursesPage";
-import StudentDashboardPage from "./pages/student/StudentDashboardPage";
-import StudentProfilePage from "./pages/student/StudentProfilePage";
-import StudentQuizzesPage from "./pages/student/StudentQuizzesPage";
-import StudentSettingsPage from "./pages/student/StudentSettingsPage";
-import StudentWishlistPage from "./pages/student/StudentWishlistPage";
-
-import PaymentSuccessPage from "./pages/student/PaymentSuccessPage";
-import PaymentHistoryPage from "./pages/student/PaymentHistoryPage";
-
-import RegisterPage from "./pages/auth/RegisterPage";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
-
-function App() {
-  const location = useLocation();
-
-  const isDashboardRoute =
-    location.pathname.startsWith("/student") ||
-    location.pathname.startsWith("/instructor") ||
-    location.pathname.startsWith("/admin");
-
+export default function App() {
   return (
-    <>
-      {!isDashboardRoute && <PublicNavbar />}
-
+    <BrowserRouter>
       <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/courses" element={<CoursesPage />} />
-        <Route
-          path="/courses/:courseId"
-          element={<CourseDetailsPage />}
-        />
-
-        <Route path="/categories" element={<ComingSoonPage />} />
-        <Route path="/instructors" element={<ComingSoonPage />} />
-        <Route path="/about" element={<ComingSoonPage />} />
-        <Route path="/contact" element={<ComingSoonPage />} />
-        <Route path="/faq" element={<ComingSoonPage />} />
-
-        <Route
-          path="/verify-certificate/:certificateNumber"
-          element={<CertificateVerificationPage />}
-        />
-
-        {/* Authentication routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/forgot-password"
-          element={<ForgotPasswordPage />}
-        />
-
-        {/* Student portal */}
-        <Route
-          path="/student"
-          element={
-            <ProtectedRoute allowedRoles={["STUDENT"]}>
-              <StudentLayout />
-            </ProtectedRoute>
-          }
-        >
+        <Route element={<AppLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="courses" element={<CoursesPage />} />
           <Route
-            index
-            element={<Navigate to="dashboard" replace />}
+            path="courses/:courseId"
+            element={<CourseDetailsPage />}
+          />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route
+            path="verify-certificate/:serialNumber"
+            element={<CertificateVerifyPage />}
+          />
+          <Route
+            path="unauthorized"
+            element={<UnauthorizedPage />}
           />
 
-          <Route
-            path="dashboard"
-            element={<StudentDashboardPage />}
-          />
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="dashboard"
+              element={<DashboardPage />}
+            />
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
 
           <Route
-            path="courses"
-            element={<StudentCoursesPage />}
-          />
+            element={<ProtectedRoute roles={["STUDENT"]} />}
+          >
+            <Route
+              path="student/learning"
+              element={<StudentLearningPage />}
+            />
+            <Route
+              path="student/learning/:courseId"
+              element={<LearningPage />}
+            />
+            <Route
+              path="student/wishlist"
+              element={<WishlistPage />}
+            />
+            <Route
+              path="student/certificates"
+              element={<CertificatesPage />}
+            />
+          </Route>
 
           <Route
-            path="courses/:courseId/learn"
-            element={<CourseLearningPage />}
-          />
+            element={<ProtectedRoute roles={["INSTRUCTOR"]} />}
+          >
+            <Route
+              path="instructor/courses"
+              element={<InstructorCoursesPage />}
+            />
+            <Route
+              path="instructor/courses/:courseId/builder"
+              element={<CourseBuilderPage />}
+            />
+          </Route>
 
           <Route
-            path="wishlist"
-            element={<StudentWishlistPage />}
-          />
+            element={<ProtectedRoute roles={["ADMIN"]} />}
+          >
+            <Route
+              path="admin/manage"
+              element={<AdminManagePage />}
+            />
+          </Route>
 
           <Route
-            path="quizzes"
-            element={<StudentQuizzesPage />}
+            path="home"
+            element={<Navigate to="/" replace />}
           />
-
-          <Route
-            path="quizzes/:quizId/attempt"
-            element={<QuizAttemptPage />}
-          />
-
-          <Route
-            path="quizzes/result/:attemptId"
-            element={<QuizResultPage />}
-          />
-
-          <Route
-            path="quizzes/history"
-            element={<QuizHistoryPage />}
-          />
-
-          <Route
-            path="certificates"
-            element={<StudentCertificatesPage />}
-          />
-
-          <Route
-            path="certificates/:certificateNumber"
-            element={<CertificateViewPage />}
-          />
-
-          <Route
-            path="profile"
-            element={<StudentProfilePage />}
-          />
-
-          <Route
-            path="settings"
-            element={<StudentSettingsPage />}
-          />
-
-          <Route
-            path="checkout/:courseId"
-            element={<CheckoutPage />}
-          />
-
-          <Route
-            path="payment-success/:paymentId"
-            element={<PaymentSuccessPage />}
-          />
-
-          <Route
-            path="payments"
-            element={<PaymentHistoryPage />}
-          />
-
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-
-        {/* Instructor portal */}
-        <Route
-          path="/instructor/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
-              <DashboardPlaceholder title="Instructor Dashboard" />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Admin portal */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["ADMIN"]}>
-              <DashboardPlaceholder title="Admin Dashboard" />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Common routes */}
-        <Route
-          path="/unauthorized"
-          element={<UnauthorizedPage />}
-        />
-
-        <Route path="/404" element={<ComingSoonPage />} />
-
-        <Route
-          path="*"
-          element={<Navigate to="/404" replace />}
-        />
       </Routes>
-
-      {!isDashboardRoute && <PublicFooter />}
-
-      <ToastContainer
-        position="top-right"
-        autoClose={2500}
-        theme="colored"
-      />
-    </>
+    </BrowserRouter>
   );
 }
-
-export default App;
