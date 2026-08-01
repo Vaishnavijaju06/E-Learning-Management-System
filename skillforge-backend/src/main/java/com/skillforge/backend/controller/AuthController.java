@@ -14,6 +14,7 @@ import com.skillforge.backend.dto.LoginRequest;
 import com.skillforge.backend.dto.RegisterRequest;
 import com.skillforge.backend.dto.UserResponse;
 import com.skillforge.backend.service.AuthService;
+import com.skillforge.backend.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class AuthController {
 
 	@Autowired
     private final AuthService authService;
+    private final UserService userService;
 
    
 
@@ -42,5 +44,10 @@ public class AuthController {
         @Valid @RequestBody LoginRequest request
     ) {
         return authService.login(request);
+    }
+    
+    @GetMapping("/me")
+    public UserResponse me() {
+        return userService.getProfile();
     }
 }
