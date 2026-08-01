@@ -115,3 +115,4 @@ surefire-reports/
 failsafe-reports/
 allure-results/
 allure-report/
+/.metadata/
