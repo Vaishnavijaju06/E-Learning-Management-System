@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 
 import com.skillforge.backend.dto.CategoryResponse;
 import com.skillforge.backend.dto.CourseResponse;
+import com.skillforge.backend.dto.ModuleResponse;
 import com.skillforge.backend.dto.UserResponse;
 import com.skillforge.backend.entity.Category;
 import com.skillforge.backend.entity.Course;
+import com.skillforge.backend.entity.CourseModule;
 import com.skillforge.backend.entity.User;
 
 @Service
@@ -58,6 +60,15 @@ public class MappingService {
             course.getInstructor().getFirstName()
                 + " "
                 + course.getInstructor().getLastName()
+        );
+    }
+    
+    public ModuleResponse toModuleResponse(CourseModule module) {
+        return new ModuleResponse(
+            module.getId(),
+            module.getCourse().getId(),
+            module.getTitle(),
+            module.getPosition()
         );
     }
 }

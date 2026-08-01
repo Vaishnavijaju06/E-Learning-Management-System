@@ -56,10 +56,10 @@ public class Course extends BaseEntity {
     @JoinColumn(name = "instructor_id", nullable = false)
     private User instructor;
 
-//    @OneToMany(
-//        mappedBy = "course",
-//        cascade = CascadeType.ALL,
-//        orphanRemoval = true
-//    )
-//    private List<CourseModule> modules = new ArrayList<>();
+    @OneToMany(
+        mappedBy = "course",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<CourseModule> modules = new ArrayList<>();
 }
