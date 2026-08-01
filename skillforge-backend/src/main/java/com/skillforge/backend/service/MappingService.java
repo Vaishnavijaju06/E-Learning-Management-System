@@ -2,9 +2,10 @@ package com.skillforge.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.skillforge.backend.dto.CategoryResponse;
 import com.skillforge.backend.dto.UserResponse;
-
-
+import com.skillforge.backend.entity.Category;
 import com.skillforge.backend.entity.User;
 
 @Service
@@ -29,6 +30,14 @@ public class MappingService {
             user.getProfilePictureUrl(),
             user.getRole(),
             user.getStatus()
+        );
+    }
+    
+    public CategoryResponse toCategoryResponse(Category category) {
+        return new CategoryResponse(
+            category.getId(),
+            category.getName(),
+            category.getDescription()
         );
     }
 }
