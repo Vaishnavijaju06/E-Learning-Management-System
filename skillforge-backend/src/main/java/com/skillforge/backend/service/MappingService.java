@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.skillforge.backend.dto.CategoryResponse;
+import com.skillforge.backend.dto.CourseResponse;
 import com.skillforge.backend.dto.UserResponse;
 import com.skillforge.backend.entity.Category;
+import com.skillforge.backend.entity.Course;
 import com.skillforge.backend.entity.User;
 
 @Service
@@ -38,6 +40,24 @@ public class MappingService {
             category.getId(),
             category.getName(),
             category.getDescription()
+        );
+    }
+    
+    public CourseResponse toCourseResponse(Course course) {
+        return new CourseResponse(
+            course.getId(),
+            course.getTitle(),
+            course.getDescription(),
+            course.getPrice(),
+            course.getLevel(),
+            course.getStatus(),
+            course.getThumbnailUrl(),
+            course.getCategory().getId(),
+            course.getCategory().getName(),
+            course.getInstructor().getId(),
+            course.getInstructor().getFirstName()
+                + " "
+                + course.getInstructor().getLastName()
         );
     }
 }
