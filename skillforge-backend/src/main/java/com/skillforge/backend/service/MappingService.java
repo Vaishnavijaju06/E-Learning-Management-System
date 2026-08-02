@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.skillforge.backend.dto.CategoryResponse;
+import com.skillforge.backend.dto.CertificateResponse;
 import com.skillforge.backend.dto.CourseResponse;
 import com.skillforge.backend.dto.EnrollmentResponse;
 import com.skillforge.backend.dto.ModuleResponse;
 import com.skillforge.backend.dto.PaymentResponse;
 import com.skillforge.backend.dto.UserResponse;
 import com.skillforge.backend.entity.Category;
+import com.skillforge.backend.entity.Certificate;
 import com.skillforge.backend.entity.Course;
 import com.skillforge.backend.entity.CourseModule;
 import com.skillforge.backend.entity.Enrollment;
@@ -54,5 +56,14 @@ public class MappingService {
 	public PaymentResponse toPaymentResponse(Payment payment) {
 		return new PaymentResponse(payment.getId(), payment.getCourse().getId(), payment.getCourse().getTitle(),
 				payment.getAmount(), payment.getStatus(), payment.getTransactionReference(), payment.getPaidAt());
+	}
+
+	public CertificateResponse toCertificateResponse(Certificate certificate) {
+		String serial = certificate.getSerialNumber();
+
+		return new CertificateResponse(certificate.getId(), serial, certificate.getStudent().getId(),
+				certificate.getStudent().getFirstName() + " " + certificate.getStudent().getLastName(),
+				certificate.getCourse().getId(), certificate.getCourse().getTitle(), certificate.getIssuedAt(),
+				"/api/certificates/" + serial + "/download", frontendUrl + "/verify-certificate/" + serial);
 	}
 }
