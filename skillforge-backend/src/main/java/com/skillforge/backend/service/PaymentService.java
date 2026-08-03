@@ -25,18 +25,17 @@ public class PaymentService {
 	private final EnrollmentService enrollmentService;
 	private final CurrentUserService currentUserService;
 	private final MappingService mappingService;
-	// private final NotificationService notificationService;
+	private final NotificationService notificationService;
 
 	public PaymentService(PaymentRepository paymentRepository, CourseService courseService,
-			EnrollmentService enrollmentService, CurrentUserService currentUserService, MappingService mappingService
-	// NotificationService notificationService
-	) {
+			EnrollmentService enrollmentService, CurrentUserService currentUserService, MappingService mappingService,
+			NotificationService notificationService) {
 		this.paymentRepository = paymentRepository;
 		this.courseService = courseService;
 		this.enrollmentService = enrollmentService;
 		this.currentUserService = currentUserService;
 		this.mappingService = mappingService;
-		// this.notificationService = notificationService;
+		this.notificationService = notificationService;
 	}
 
 	@Transactional
@@ -59,8 +58,8 @@ public class PaymentService {
 				"SF-" + UUID.randomUUID().toString().replace("-", "").substring(0, 16).toUpperCase());
 		payment.setPaidAt(LocalDateTime.now());
 
-//        paymentRepository.save(payment);
-//        notificationService.sendPaymentConfirmation(payment);
+		paymentRepository.save(payment);
+		notificationService.sendPaymentConfirmation(payment);
 
 		return mappingService.toPaymentResponse(payment);
 	}
