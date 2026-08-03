@@ -12,73 +12,60 @@ import com.skillforge.backend.entity.User;
 @Service
 public class NotificationService {
 
-    private final EmailClient emailClient;
-    private final boolean enabled;
+	private final EmailClient emailClient;
+	private final boolean enabled;
+	@Value("${app.frontend-url}")
+	private String frontendUrl;
 
-    public NotificationService(
-        EmailClient emailClient,
-        @Value("${app.notifications.enabled}") boolean enabled
-    ) {
-        this.emailClient = emailClient;
-        this.enabled = enabled;
-    }
+	public NotificationService(EmailClient emailClient, @Value("${app.notifications.enabled}") boolean enabled) {
+		this.emailClient = emailClient;
+		this.enabled = enabled;
+	}
 
-    public void sendWelcome(User user) {
-        if (!enabled) {
-            return;
-        }
+	public void sendWelcome(User user) {
+		if (!enabled) {
+			return;
+		}
 
-        emailClient.send(
-            new EmailRequest(
-                user.getEmail(),
-                "Welcome to SkillForge",
-                "<h2>Welcome, "
-                    + escape(user.getFirstName())
-                    + "!</h2><p>Your SkillForge account has been created.</p>"
-            )
-        );
-    }
+		emailClient.send(new EmailRequest(user.getEmail(), "Welcome to SkillForge", "<h2>Welcome, "
+				+ escape(user.getFirstName()) + "!</h2><p>Your SkillForge account has been created.</p>"));
+	}
 
-    public void sendPaymentConfirmation(Payment payment) {
-        if (!enabled) {
-            return;
-        }
+	public void sendPaymentConfirmation(Payment payment) {
+		if (!enabled) {
+			return;
+		}
 
-        emailClient.send(
-            new EmailRequest(
-                payment.getStudent().getEmail(),
-                "SkillForge payment confirmation",
-                "<h2>Payment successful</h2><p>You now have access to "
-                    + escape(payment.getCourse().getTitle())
-                    + ".</p><p>Reference: "
-                    + escape(payment.getTransactionReference())
-                    + "</p>"
-            )
-        );
-    }
+		emailClient.send(new EmailRequest(payment.getStudent().getEmail(), "SkillForge payment confirmation",
+				"<h2>Payment successful</h2><p>You now have access to " + escape(payment.getCourse().getTitle())
+						+ ".</p><p>Reference: " + escape(payment.getTransactionReference()) + "</p>"));
+	}
 
-    public void sendCertificate(Certificate certificate) {
-        if (!enabled) {
-            return;
-        }
+	public void sendCertificate(Certificate certificate) {
+		if (!enabled) {
+			return;
+		}
 
-        emailClient.send(
-            new EmailRequest(
-                certificate.getStudent().getEmail(),
-                "Your SkillForge certificate",
-                "<h2>Congratulations!</h2><p>Your certificate for "
-                    + escape(certificate.getCourse().getTitle())
-                    + " is ready.</p><p>Certificate number: "
-                    + escape(certificate.getSerialNumber())
-                    + "</p>"
-            )
-        );
-    }
+		emailClient.send(new EmailRequest(certificate.getStudent().getEmail(), "Your SkillForge certificate",
+				"<h2>Congratulations!</h2><p>Your certificate for " + escape(certificate.getCourse().getTitle())
+						+ " is ready.</p><p>Certificate number: " + escape(certificate.getSerialNumber()) + "</p>"));
+	}
 
-    private String escape(String value) {
-        return value
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;");
-    }
+	private String escape(String value) {
+		return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+	}
+
+	public void sendVerificationEmail(User user, String token) {
+		if (!enabled) {
+			return;
+		}
+
+		String verificationLink = frontendUrl + "/verify-email?token=" + token;
+
+		String body = "<h2>Verify your SkillForge account</h2>" + "<p>Hello " + escape(user.getFirstName()) + ",</p>"
+				+ "<p>Click the link below to verify your email address.</p>" + "<p><a href=\"" + verificationLink
+				+ "\">Verify Email</a></p>" + "<p>This link expires in 24 hours.</p>";
+
+		emailClient.send(new EmailRequest(user.getEmail(), "Verify your SkillForge account", body));
+	}
 }

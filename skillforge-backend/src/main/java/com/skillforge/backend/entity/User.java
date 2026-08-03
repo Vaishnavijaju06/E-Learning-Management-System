@@ -19,32 +19,35 @@ import lombok.Setter;
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    @Column(nullable = false, length = 80)
-    private String firstName;
+	@Column(nullable = false, length = 80)
+	private String firstName;
 
-    @Column(nullable = false, length = 80)
-    private String lastName;
+	@Column(nullable = false, length = 80)
+	private String lastName;
 
-    @Column(nullable = false, unique = true, length = 160)
-    private String email;
+	@Column(nullable = false, unique = true, length = 160)
+	private String email;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 
-    @Column(length = 20)
-    private String phone;
+	@Column(length = 20)
+	private String phone;
 
-    @Column(length = 500)
-    private String bio;
+	@Column(length = 500)
+	private String bio;
 
-    @Column(length = 500)
-    private String profilePictureUrl;
+	@Column(length = 500)
+	private String profilePictureUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private Role role;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 20)
+	private Role role;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private UserStatus status;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 20)
+	private UserStatus status;
+
+	@Column(nullable = false)
+	private boolean enabled = false;
 }
