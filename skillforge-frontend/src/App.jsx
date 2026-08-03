@@ -24,6 +24,7 @@ import RegisterPage from "./pages/RegisterPage";
 import StudentLearningPage from "./pages/StudentLearningPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import WishlistPage from "./pages/WishlistPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 export default function App() {
   return (
@@ -104,6 +105,11 @@ export default function App() {
           />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
+
+        <Route
+          path="/verify-email"
+          element={<VerifyEmailPage />}
+        />
       </Routes>
     </BrowserRouter>
   );
