@@ -34,7 +34,7 @@ public class EmailClient {
     }
 
     @Async
-    public void send(EmailRequest request) {
+    public void sendEmail(EmailRequest request) {
         try {
             restClient
                 .post()

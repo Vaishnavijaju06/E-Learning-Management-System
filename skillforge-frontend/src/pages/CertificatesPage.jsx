@@ -5,8 +5,10 @@ import getErrorMessage from "../api/getErrorMessage";
 import { certificateApi } from "../api/skillforgeApi";
 import AlertMessage from "../components/AlertMessage";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useToast } from "../context/ToastContext";
 
 export default function CertificatesPage() {
+  const toast = useToast();
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -15,9 +17,13 @@ export default function CertificatesPage() {
     certificateApi
       .mine()
       .then((response) => setCertificates(response.data))
-      .catch((error) => setMessage(getErrorMessage(error)))
+      .catch((error) => {
+        const errorMessage = getErrorMessage(error);
+        setMessage(errorMessage);
+        toast.error(errorMessage);
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   async function download(certificate) {
     try {
@@ -30,8 +36,11 @@ export default function CertificatesPage() {
       anchor.download = `SkillForge-${certificate.serialNumber}.pdf`;
       anchor.click();
       URL.revokeObjectURL(url);
+      toast.success("Certificate downloaded successfully.");
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      const errorMessage = getErrorMessage(error);
+      setMessage(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -41,12 +50,24 @@ export default function CertificatesPage() {
 
   return (
     <div className="container py-5">
-      <h1 className="fw-bold mb-4">My Certificates</h1>
+      <div className="section-heading mb-4">
+        <span className="section-eyebrow">
+          Your achievements
+        </span>
+        <h1>My Certificates</h1>
+        <p>
+          Download your certificates or open the public
+          verification page.
+        </p>
+      </div>
+
       <AlertMessage>{message}</AlertMessage>
 
       {certificates.length === 0 ? (
         <div className="empty-state">
-          <i className="bi bi-award"></i>
+          <div className="empty-state-icon">
+            <i className="bi bi-award"></i>
+          </div>
           <h2 className="h4">No certificates yet</h2>
           <p className="text-secondary mb-0">
             Complete a course and its quizzes to earn one.
@@ -59,14 +80,21 @@ export default function CertificatesPage() {
               className="col-md-6"
               key={certificate.serialNumber}
             >
-              <article className="certificate-card">
-                <i className="bi bi-award-fill certificate-icon"></i>
+              <article className="certificate-card h-100">
+                <span className="certificate-icon">
+                  <i className="bi bi-award-fill"></i>
+                </span>
                 <div className="flex-grow-1">
-                  <h2 className="h5 fw-bold">
+                  <span className="section-eyebrow">
+                    Certificate of completion
+                  </span>
+                  <h2 className="h5 fw-bold mt-2">
                     {certificate.courseTitle}
                   </h2>
                   <p className="small text-secondary mb-3">
-                    {certificate.serialNumber} · Issued{" "}
+                    {certificate.serialNumber}
+                    <br />
+                    Issued{" "}
                     {new Date(
                       certificate.issuedAt
                     ).toLocaleDateString()}
@@ -77,12 +105,14 @@ export default function CertificatesPage() {
                       type="button"
                       onClick={() => download(certificate)}
                     >
+                      <i className="bi bi-download me-1"></i>
                       Download PDF
                     </button>
                     <Link
                       className="btn btn-outline-secondary btn-sm"
                       to={`/verify-certificate/${certificate.serialNumber}`}
                     >
+                      <i className="bi bi-patch-check me-1"></i>
                       Verify
                     </Link>
                   </div>

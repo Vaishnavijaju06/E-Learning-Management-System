@@ -35,13 +35,46 @@ public class Payment extends BaseEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
+    @Column(nullable = false, length = 10)
+    private String currency = "INR";
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PaymentStatus status;
 
-    @Column(nullable = false, unique = true, length = 100)
+    /*
+     * Kept for compatibility with your current payment history.
+     * After successful Razorpay verification, we will store the
+     * Razorpay payment ID here as well.
+     */
+    @Column(unique = true, length = 100)
     private String transactionReference;
 
-    @Column(nullable = false)
+    @Column(
+        name = "razorpay_order_id",
+        unique = true,
+        length = 100
+    )
+    private String razorpayOrderId;
+
+    @Column(
+        name = "razorpay_payment_id",
+        unique = true,
+        length = 100
+    )
+    private String razorpayPaymentId;
+
+    @Column(
+        name = "razorpay_signature",
+        length = 500
+    )
+    private String razorpaySignature;
+
+    @Column(
+        name = "failure_reason",
+        length = 500
+    )
+    private String failureReason;
+
     private LocalDateTime paidAt;
 }

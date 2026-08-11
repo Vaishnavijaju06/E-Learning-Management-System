@@ -11,7 +11,7 @@ export default function AppLayout() {
   return (
     <div className="min-vh-100 d-flex flex-column">
       <Navbar />
-      <main className="flex-grow-1">
+      <main className="flex-grow-1 app-main">
         <Outlet />
       </main>
       <Footer />

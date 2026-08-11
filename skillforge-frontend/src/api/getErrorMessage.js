@@ -4,7 +4,10 @@ export default function getErrorMessage(
 ) {
   const data = error.response?.data;
 
-  if (data?.validationErrors) {
+  if (
+    data?.validationErrors &&
+    Object.keys(data.validationErrors).length > 0
+  ) {
     return Object.values(data.validationErrors).join(", ");
   }
 

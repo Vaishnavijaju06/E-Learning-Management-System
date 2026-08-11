@@ -8,8 +8,10 @@ import {
 } from "../api/skillforgeApi";
 import AlertMessage from "../components/AlertMessage";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useToast } from "../context/ToastContext";
 
 export default function CourseBuilderPage() {
+  const toast = useToast();
   const { courseId } = useParams();
   const [content, setContent] = useState(null);
   const [moduleForm, setModuleForm] = useState({
@@ -65,7 +67,9 @@ export default function CourseBuilderPage() {
         }));
       }
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -88,9 +92,12 @@ export default function CourseBuilderPage() {
         position: content.modules.length + 2
       });
       setMessage("Module added.");
+      toast.success("Module added successfully.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -115,9 +122,12 @@ export default function CourseBuilderPage() {
         position: Number(lessonForm.position) + 1
       });
       setMessage("Lesson added.");
+      toast.success("Lesson added successfully.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -151,9 +161,12 @@ export default function CourseBuilderPage() {
         ]
       });
       setMessage("Quiz added.");
+      toast.success("Quiz added successfully.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -177,10 +190,11 @@ export default function CourseBuilderPage() {
       >
         ← Back to courses
       </Link>
-      <h1 className="fw-bold">{content.course.title}</h1>
-      <p className="text-secondary">
-        Add modules, lessons and a quiz for each module.
-      </p>
+      <div className="section-heading mb-4">
+        <span className="section-eyebrow">Course builder</span>
+        <h1>{content.course.title}</h1>
+        <p>Add modules, lessons and a quiz for each module.</p>
+      </div>
 
       <AlertMessage>{error}</AlertMessage>
       <AlertMessage type="success">{message}</AlertMessage>

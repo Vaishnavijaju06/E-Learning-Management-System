@@ -1,16 +1,52 @@
 import { useEffect, useRef, useState } from "react";
 
 import { chatbotApi } from "../api/skillforgeApi";
+import { useAuth } from "../context/AuthContext";
 
-const welcome = {
-  sender: "bot",
-  text: "Hello! I am the SkillForge Tutor. Ask me a learning question.",
-};
+
+
+function getWelcomeMessage(user) {
+  if (!user) {
+    return {
+      sender: "bot",
+      text:
+        "👋 Welcome to SkillForge!\n\nI'm your SkillForge Assistant.\n\nI can help you with:\n• Courses\n• Fees\n• Duration\n• Registration\n• Contact information\n• Certificates",
+    };
+  }
+
+  switch (user.role) {
+    case "STUDENT":
+      return {
+        sender: "bot",
+        text: `👋 Welcome back, ${user.firstName}!\n\nI'm your SkillForge Learning Assistant.\n\nI can help you with:\n• My courses\n• Certificates\n• Payments\n• Learning progress`,
+      };
+
+    case "INSTRUCTOR":
+      return {
+        sender: "bot",
+        text: `👋 Welcome ${user.firstName}!\n\nI'm your SkillForge Teaching Assistant.\n\nAsk me about:\n• Course management\n• Student analytics\n• Quiz management\n• Lesson publishing`,
+      };
+
+    case "ADMIN":
+      return {
+        sender: "bot",
+        text: `👋 Welcome ${user.firstName}!\n\nI'm your SkillForge Admin Assistant.\n\nAsk me about:\n• Users\n• Pending courses\n• Instructor approvals\n• Revenue\n• Dashboard analytics`,
+      };
+
+    default:
+      return {
+        sender: "bot",
+        text: "👋 Welcome to SkillForge!",
+      };
+  }
+}
 
 export default function ChatbotWidget() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([welcome]);
-  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState(() => [
+    getWelcomeMessage(user),
+  ]); const [input, setInput] = useState("");
   const [conversationId, setConversationId] = useState(null);
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
@@ -22,7 +58,7 @@ export default function ChatbotWidget() {
   }, [messages, loading]);
 
   function newChat() {
-    setMessages([welcome]);
+    setMessages([getWelcomeMessage(user)]);
     setConversationId(null);
     setInput("");
   }
@@ -44,6 +80,8 @@ export default function ChatbotWidget() {
       const response = await chatbotApi.send({
         message,
         conversationId,
+        role: user?.role || "VISITOR",
+        userName: user?.firstName || "Guest",
       });
 
       setMessages((current) => [

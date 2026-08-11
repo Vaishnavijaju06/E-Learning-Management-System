@@ -17,38 +17,65 @@ import com.skillforge.backend.repository.EnrollmentRepository;
 @Service
 public class EnrollmentService {
 
-	private final EnrollmentRepository enrollmentRepository;
-	private final CurrentUserService currentUserService;
-	private final MappingService mappingService;
+    private final EnrollmentRepository enrollmentRepository;
+    private final CurrentUserService currentUserService;
+    private final MappingService mappingService;
 
-	public EnrollmentService(EnrollmentRepository enrollmentRepository, CurrentUserService currentUserService,
-			MappingService mappingService) {
-		this.enrollmentRepository = enrollmentRepository;
-		this.currentUserService = currentUserService;
-		this.mappingService = mappingService;
-	}
+    public EnrollmentService(
+        EnrollmentRepository enrollmentRepository,
+        CurrentUserService currentUserService,
+        MappingService mappingService
+    ) {
+        this.enrollmentRepository = enrollmentRepository;
+        this.currentUserService = currentUserService;
+        this.mappingService = mappingService;
+    }
 
-	@Transactional
-	public Enrollment createEnrollment(User student, Course course) {
-		if (enrollmentRepository.existsByStudentIdAndCourseId(student.getId(), course.getId())) {
-			throw new BadRequestException("You are already enrolled in this course");
-		}
+    @Transactional
+    public Enrollment createEnrollment(
+        User student,
+        Course course
+    ) {
+        if (
+            enrollmentRepository.existsByStudentIdAndCourseId(
+                student.getId(),
+                course.getId()
+            )
+        ) {
+            throw new BadRequestException(
+                "You are already enrolled in this course"
+            );
+        }
 
-		Enrollment enrollment = new Enrollment();
-		enrollment.setStudent(student);
-		enrollment.setCourse(course);
-		enrollment.setStatus(EnrollmentStatus.ACTIVE);
-		enrollment.setProgressPercent(0);
-		enrollment.setEnrolledAt(LocalDateTime.now());
+        Enrollment enrollment = new Enrollment();
+        enrollment.setStudent(student);
+        enrollment.setCourse(course);
+        enrollment.setStatus(EnrollmentStatus.ACTIVE);
+        enrollment.setProgressPercent(0);
+        enrollment.setEnrolledAt(LocalDateTime.now());
 
-		return enrollmentRepository.save(enrollment);
-	}
+        return enrollmentRepository.save(enrollment);
+    }
 
-	@Transactional(readOnly = true)
-	public List<EnrollmentResponse> findMyEnrollments() {
-		User student = currentUserService.getCurrentUser();
+    @Transactional(readOnly = true)
+    public List<EnrollmentResponse> findMyEnrollments() {
+        User student = currentUserService.getCurrentUser();
 
-		return enrollmentRepository.findByStudentIdOrderByEnrolledAtDesc(student.getId()).stream()
-				.map(mappingService::toEnrollmentResponse).toList();
-	}
+        return enrollmentRepository
+            .findByStudentIdOrderByEnrolledAtDesc(student.getId())
+            .stream()
+            .map(mappingService::toEnrollmentResponse)
+            .toList();
+    }
+    @Transactional(readOnly = true)
+    public boolean isEnrolled(
+        Long studentId,
+        Long courseId
+    ) {
+        return enrollmentRepository
+            .existsByStudentIdAndCourseId(
+                studentId,
+                courseId
+            );
+    }
 }

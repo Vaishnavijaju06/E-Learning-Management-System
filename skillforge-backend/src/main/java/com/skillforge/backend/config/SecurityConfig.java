@@ -65,15 +65,21 @@ public class SecurityConfig {
                 )
             )
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(
+            		.requestMatchers("/api/chatbot/**",
                     "/api/health",
                     "/actuator/health",
                     "/api/auth/register",
                     "/api/auth/login",
+                    "/api/auth/forgot-password",
+                    "/api/auth/reset-password",
                     "/api/certificates/verify/**",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**"
+                ).permitAll()
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/contact"
                 ).permitAll()
                 .requestMatchers(
                     HttpMethod.GET,

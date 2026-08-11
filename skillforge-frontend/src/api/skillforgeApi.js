@@ -3,7 +3,19 @@ import apiClient from "./apiClient";
 export const authApi = {
   login: (data) => apiClient.post("/auth/login", data),
   register: (data) => apiClient.post("/auth/register", data),
-  me: () => apiClient.get("/auth/me")
+  me: () => apiClient.get("/auth/me"),
+  forgotPassword: (email) =>
+    apiClient.post("/auth/forgot-password", { email }),
+  resetPassword: (token, newPassword) =>
+    apiClient.post("/auth/reset-password", {
+      token,
+      newPassword
+    })
+};
+
+export const contactApi = {
+  create: (data) => apiClient.post("/contact", data),
+  list: () => apiClient.get("/contact")
 };
 
 export const categoryApi = {
@@ -72,10 +84,28 @@ export const quizApi = {
 };
 
 export const paymentApi = {
-  checkout: (courseId) =>
-    apiClient.post("/payments/checkout", { courseId }),
-  mine: () => apiClient.get("/payments/my"),
-  all: () => apiClient.get("/payments")
+  checkout(courseId) {
+    return apiClient.post("/payments/checkout", {
+      courseId
+    });
+  },
+
+  createRazorpayOrder(courseId) {
+    return apiClient.post(
+      `/payments/razorpay/orders/${courseId}`
+    );
+  },
+
+  verifyRazorpayPayment(paymentData) {
+    return apiClient.post(
+      "/payments/razorpay/verify",
+      paymentData
+    );
+  },
+
+  mine() {
+    return apiClient.get("/payments/my");
+  }
 };
 
 export const enrollmentApi = {
@@ -105,6 +135,11 @@ export const certificateApi = {
 export const userApi = {
   profile: () => apiClient.get("/profile"),
   updateProfile: (data) => apiClient.put("/profile", data),
+  changePassword: (currentPassword, newPassword) =>
+    apiClient.post("/profile/change-password", {
+      currentPassword,
+      newPassword
+    }),
   all: () => apiClient.get("/admin/users"),
   setStatus: (id, status) =>
     apiClient.patch(`/admin/users/${id}/status`, null, {

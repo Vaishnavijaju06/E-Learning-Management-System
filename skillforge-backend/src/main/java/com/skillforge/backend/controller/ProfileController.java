@@ -1,11 +1,14 @@
 package com.skillforge.backend.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.skillforge.backend.dto.ChangePasswordRequest;
+import com.skillforge.backend.dto.MessageResponse;
 import com.skillforge.backend.dto.ProfileUpdateRequest;
 import com.skillforge.backend.dto.UserResponse;
 import com.skillforge.backend.service.UserService;
@@ -32,5 +35,19 @@ public class ProfileController {
         @Valid @RequestBody ProfileUpdateRequest request
     ) {
         return userService.updateProfile(request);
+    }
+
+    @PostMapping("/change-password")
+    public MessageResponse changePassword(
+        @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        userService.changePassword(
+            request.currentPassword(),
+            request.newPassword()
+        );
+
+        return new MessageResponse(
+            "Your password has been updated."
+        );
     }
 }

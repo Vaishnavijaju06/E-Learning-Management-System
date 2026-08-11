@@ -3,16 +3,20 @@ import { useEffect, useState } from "react";
 import getErrorMessage from "../api/getErrorMessage";
 import {
   categoryApi,
+  contactApi,
   courseApi,
   userApi
 } from "../api/skillforgeApi";
 import AlertMessage from "../components/AlertMessage";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useToast } from "../context/ToastContext";
 
 export default function AdminManagePage() {
+  const toast = useToast();
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState([]);
   const [pendingCourses, setPendingCourses] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [categoryForm, setCategoryForm] = useState({
     id: null,
     name: "",
@@ -26,18 +30,26 @@ export default function AdminManagePage() {
     setLoading(true);
 
     try {
-      const [categoryResult, userResult, courseResult] =
-        await Promise.all([
-          categoryApi.list(),
-          userApi.all(),
-          courseApi.pending()
-        ]);
+      const [
+        categoryResult,
+        userResult,
+        courseResult,
+        messageResult
+      ] = await Promise.all([
+        categoryApi.list(),
+        userApi.all(),
+        courseApi.pending(),
+        contactApi.list()
+      ]);
 
       setCategories(categoryResult.data);
       setUsers(userResult.data);
       setPendingCourses(courseResult.data);
+      setMessages(messageResult.data);
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -67,9 +79,12 @@ export default function AdminManagePage() {
         description: ""
       });
       setMessage("Category saved.");
+      toast.success("Category saved successfully.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -81,9 +96,12 @@ export default function AdminManagePage() {
     try {
       await categoryApi.remove(id);
       setMessage("Category deleted.");
+      toast.success("Category deleted successfully.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -91,9 +109,12 @@ export default function AdminManagePage() {
     try {
       await userApi.setStatus(id, status);
       setMessage(`User status changed to ${status}.`);
+      toast.success(`User status changed to ${status}.`);
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -101,9 +122,12 @@ export default function AdminManagePage() {
     try {
       await courseApi.setStatus(id, status);
       setMessage(`Course ${status.toLowerCase()}.`);
+      toast.success(`Course ${status.toLowerCase()}.`);
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -113,12 +137,11 @@ export default function AdminManagePage() {
 
   return (
     <div className="container py-5">
-      <p className="text-primary fw-semibold mb-1">
-        ADMINISTRATION
-      </p>
-      <h1 className="fw-bold mb-4">
-        Platform Management
-      </h1>
+      <div className="section-heading mb-4">
+        <span className="section-eyebrow">Administration</span>
+        <h1>Platform Management</h1>
+        <p>Manage course categories, users and approval requests.</p>
+      </div>
 
       <AlertMessage>{error}</AlertMessage>
       <AlertMessage type="success">{message}</AlertMessage>
@@ -151,6 +174,18 @@ export default function AdminManagePage() {
             Course Approvals
             <span className="badge text-bg-danger ms-2">
               {pendingCourses.length}
+            </span>
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className="nav-link"
+            data-bs-toggle="tab"
+            data-bs-target="#messages"
+          >
+            Contact Messages
+            <span className="badge text-bg-secondary ms-2">
+              {messages.length}
             </span>
           </button>
         </li>
@@ -395,6 +430,47 @@ export default function AdminManagePage() {
             <div className="empty-state">
               <i className="bi bi-check2-circle"></i>
               <p>No courses are waiting for approval.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="tab-pane fade" id="messages">
+          <div className="card border-0 shadow-sm">
+            <div className="table-responsive">
+              <table className="table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {messages.map((contactMessage) => (
+                    <tr key={contactMessage.id}>
+                      <td>
+                        <strong>
+                          {contactMessage.name}
+                        </strong>
+                        <div className="small text-secondary">
+                          {contactMessage.email}
+                        </div>
+                      </td>
+                      <td>{contactMessage.subject}</td>
+                      <td className="text-secondary">
+                        {contactMessage.message}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {messages.length === 0 && (
+            <div className="empty-state">
+              <i className="bi bi-envelope"></i>
+              <p>No contact messages yet.</p>
             </div>
           )}
         </div>
