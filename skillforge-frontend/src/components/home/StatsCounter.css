@@ -1,0 +1,36 @@
+/* this is for site visitor */
+.stats-section{
+    padding:90px 0;
+    background:#ffffff;
+}
+
+.stats-card{
+    padding:40px 20px;
+    text-align:center;
+    border-radius:20px;
+    transition:.3s;
+    height:100%;
+}
+
+.stats-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 30px rgba(0,0,0,.1);
+}
+
+.stats-card i{
+    font-size:42px;
+    color:#4f46e5;
+    margin-bottom:15px;
+}
+
+.stats-card h2{
+    font-size:48px;
+    font-weight:700;
+    color:#111827;
+}
+
+.stats-card p{
+    font-size:18px;
+    margin-top:10px;
+    color:#555;
+}

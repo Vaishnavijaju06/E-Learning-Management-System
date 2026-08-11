@@ -1,34 +1,34 @@
 package com.skillforge.backend.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.skillforge.backend.client.ChatbotClient;
 import com.skillforge.backend.dto.ChatbotRequest;
 import com.skillforge.backend.dto.ChatbotResponse;
+import com.skillforge.backend.service.ChatbotOrchestratorService;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/chatbot")
+@Validated
 public class ChatbotController {
 
-    private final ChatbotClient chatbotClient;
+	private final ChatbotOrchestratorService chatbotOrchestratorService;
 
-    public ChatbotController(ChatbotClient chatbotClient) {
-        this.chatbotClient = chatbotClient;
-    }
+	public ChatbotController(ChatbotOrchestratorService chatbotOrchestratorService) {
 
-    @PostMapping("/chat")
-    @PreAuthorize(
-        "hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')"
-    )
-    public ChatbotResponse chat(
-        @Valid @RequestBody ChatbotRequest request
-    ) {
-        return chatbotClient.send(request);
-    }
+		this.chatbotOrchestratorService = chatbotOrchestratorService;
+	}
+
+	@PostMapping("/chat")
+	public ChatbotResponse chat(@Valid @RequestBody ChatbotRequest request, Authentication authentication) {
+
+		return chatbotOrchestratorService.processChat(request, authentication);
+	}
 }

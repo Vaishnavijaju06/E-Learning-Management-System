@@ -1,0 +1,162 @@
+/* ===========================
+   FOOTER
+=========================== */
+
+.footer {
+  margin-top: 50px;
+  background: linear-gradient(90deg, #1b1f3a 0%, #2f2b73 100%);
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.18);
+}
+
+/* ===========================
+   CONTAINER
+=========================== */
+
+.footer-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr;
+
+  gap: 50px;
+
+  padding: 40px 0;
+  align-items: start;
+}
+
+/* ===========================
+   LEFT SECTION
+=========================== */
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 430px;
+}
+
+/* Logo */
+
+.footer-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+/* SkillForge */
+
+.footer-name {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Tagline */
+
+.footer-tagline {
+  margin: 8px 0 18px;
+  color: #cfd4ff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Description */
+
+.footer-description {
+  margin: 0;
+
+  color: #d9def8;
+
+  font-size: 15px;
+
+  line-height: 1.8;
+}
+
+/* ===========================
+   RIGHT COLUMNS
+=========================== */
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+
+  padding-top: 70px;
+}
+
+.footer-column h3 {
+  margin: 0 0 20px;
+
+  font-size: 24px;
+
+  font-weight: 700;
+
+  color: #ffffff;
+}
+
+.footer-column a {
+  color: #d8dcf2;
+
+  text-decoration: none;
+
+  margin-bottom: 14px;
+
+  transition: 0.25s;
+}
+
+.footer-column a:hover {
+  color: #ffc83d;
+  padding-left: 4px;
+}
+
+/* ===========================
+   COPYRIGHT
+=========================== */
+
+.footer-bottom {
+  text-align: center;
+
+  padding: 18px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: #cfd4f8;
+
+  font-size: 14px;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width: 992px) {
+
+  .footer-container {
+
+    grid-template-columns: 1fr;
+
+    gap: 35px;
+
+    text-align: center;
+  }
+
+  .footer-brand {
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .footer-column {
+    align-items: center;
+    padding-top: 0;
+  }
+
+  .footer-description {
+    max-width: 100%;
+  }
+
+}

@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 export default function CourseCard({
   course,
   onWishlist,
-  showWishlist = false
+  showWishlist = false,
+  isWishlisted = false
 }) {
+  const price = Number(course.price) || 0;
+
   return (
-    <article className="card course-card h-100 border-0 shadow-sm">
+    <article className="card course-card h-100 border-0">
       <div className="course-image-wrapper">
         <img
           src={
@@ -14,54 +17,85 @@ export default function CourseCard({
             "/course-placeholder.svg"
           }
           className="card-img-top course-image"
-          alt=""
+          alt={course.title || "Course thumbnail"}
+          onError={(event) => {
+            event.currentTarget.src =
+              "/course-placeholder.svg";
+          }}
         />
+
+        <span className="course-category-chip">
+          {course.categoryName || "Course"}
+        </span>
 
         {showWishlist && (
           <button
             type="button"
-            className="btn btn-light rounded-circle wishlist-button"
+            className={`btn wishlist-button${isWishlisted ? " active" : ""
+              }`}
             onClick={() => onWishlist(course)}
-            aria-label="Toggle wishlist"
+            aria-label={
+              isWishlisted
+                ? `Remove ${course.title} from wishlist`
+                : `Add ${course.title} to wishlist`
+            }
           >
-            <i className="bi bi-heart"></i>
+            <i
+              className={`bi ${isWishlisted ? "bi-heart-fill" : "bi-heart"
+                }`}
+            ></i>
           </button>
         )}
       </div>
 
-      <div className="card-body d-flex flex-column">
-        <div className="d-flex justify-content-between gap-2 mb-2">
-          <span className="badge text-bg-light">
-            {course.categoryName}
-          </span>
-          <span className="small text-secondary">
-            {course.level}
+      <div className="card-body d-flex flex-column p-4">
+        <div className="d-flex align-items-center gap-2 mb-3">
+          <span className="course-level">
+            <i className="bi bi-bar-chart-fill me-1"></i>
+            {course.level || "All levels"}
           </span>
         </div>
 
-        <h3 className="h5">{course.title}</h3>
+        <h3 className="h5 course-card-title">
+          {course.title}
+        </h3>
 
         <p className="small text-secondary line-clamp-3 flex-grow-1">
           {course.description}
         </p>
 
-        <p className="small mb-2">
-          <i className="bi bi-person me-1"></i>
-          {course.instructorName}
-        </p>
+        <div className="course-instructor mb-3">
+          <span className="course-instructor-avatar">
+            {course.instructorName
+              ?.charAt(0)
+              ?.toUpperCase() || "I"}
+          </span>
+          <span>
+            <small>Instructor</small>
+            <strong>
+              {course.instructorName || "SkillForge"}
+            </strong>
+          </span>
+        </div>
 
-        <div className="d-flex align-items-center justify-content-between">
-          <strong className="text-primary">
-            {Number(course.price) === 0
-              ? "Free"
-              : `₹${Number(course.price).toFixed(0)}`}
-          </strong>
+        <div className="course-card-footer">
+          <div>
+            <small className="text-secondary d-block">
+              Course fee
+            </small>
+            <strong className="course-price">
+              {price === 0
+                ? "Free"
+                : `₹${price.toFixed(0)}`}
+            </strong>
+          </div>
 
           <Link
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary course-view-btn"
             to={`/courses/${course.id}`}
           >
             View Course
+            <i className="bi bi-arrow-right ms-2"></i>
           </Link>
         </div>
       </div>

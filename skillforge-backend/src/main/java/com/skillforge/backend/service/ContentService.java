@@ -1,38 +1,69 @@
 package com.skillforge.backend.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import com.skillforge.backend.dto.CourseContentResponse;
 import com.skillforge.backend.dto.LessonRequest;
 import com.skillforge.backend.dto.LessonResponse;
 import com.skillforge.backend.dto.ModuleRequest;
 import com.skillforge.backend.dto.ModuleResponse;
+import com.skillforge.backend.dto.ProgressResponse;
 import com.skillforge.backend.entity.Course;
 import com.skillforge.backend.entity.CourseModule;
+import com.skillforge.backend.entity.Enrollment;
 import com.skillforge.backend.entity.Lesson;
+import com.skillforge.backend.entity.LessonProgress;
+import com.skillforge.backend.entity.User;
+import com.skillforge.backend.enums.EnrollmentStatus;
+import com.skillforge.backend.enums.Role;
 import com.skillforge.backend.exception.BadRequestException;
+import com.skillforge.backend.exception.ForbiddenException;
 import com.skillforge.backend.exception.ResourceNotFoundException;
 import com.skillforge.backend.repository.CourseModuleRepository;
-
+import com.skillforge.backend.repository.EnrollmentRepository;
+import com.skillforge.backend.repository.LessonProgressRepository;
 import com.skillforge.backend.repository.LessonRepository;
-
-
-import lombok.RequiredArgsConstructor;
+import com.skillforge.backend.repository.QuizRepository;
 
 @Service
-@RequiredArgsConstructor
 public class ContentService {
 
-	@Autowired
     private final CourseService courseService;
     private final CourseModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final LessonProgressRepository progressRepository;
+    private final QuizRepository quizRepository;
+    private final CurrentUserService currentUserService;
     private final MappingService mappingService;
 
-   
+    public ContentService(
+        CourseService courseService,
+        CourseModuleRepository moduleRepository,
+        LessonRepository lessonRepository,
+        EnrollmentRepository enrollmentRepository,
+        LessonProgressRepository progressRepository,
+        QuizRepository quizRepository,
+        CurrentUserService currentUserService,
+        MappingService mappingService
+    ) {
+        this.courseService = courseService;
+        this.moduleRepository = moduleRepository;
+        this.lessonRepository = lessonRepository;
+        this.enrollmentRepository = enrollmentRepository;
+        this.progressRepository = progressRepository;
+        this.quizRepository = quizRepository;
+        this.currentUserService = currentUserService;
+        this.mappingService = mappingService;
+    }
+
     @Transactional
     public ModuleResponse createModule(
         Long courseId,
@@ -91,7 +122,141 @@ public class ContentService {
         lessonRepository.delete(lesson);
     }
 
-    
+    @Transactional(readOnly = true)
+    public CourseContentResponse getCourseContent(Long courseId) {
+        User user = currentUserService.getCurrentUser();
+        Course course = courseService.findEntity(courseId);
+
+        Enrollment enrollment = null;
+
+        if (user.getRole() == Role.STUDENT) {
+            enrollment = enrollmentRepository
+                .findByStudentIdAndCourseId(user.getId(), courseId)
+                .orElseThrow(() ->
+                    new ForbiddenException(
+                        "Purchase or enroll in this course first"
+                    )
+                );
+        } else if (
+            user.getRole() == Role.INSTRUCTOR
+            && !course.getInstructor().getId().equals(user.getId())
+        ) {
+            throw new ForbiddenException(
+                "You do not own this course"
+            );
+        }
+
+        final Enrollment finalEnrollment = enrollment;
+
+        Set<Long> completedLessonIds = finalEnrollment == null
+            ? Set.of()
+            : progressRepository
+                .findByEnrollmentId(finalEnrollment.getId())
+                .stream()
+                .filter(LessonProgress::isCompleted)
+                .map(progress -> progress.getLesson().getId())
+                .collect(Collectors.toSet());
+
+        List<CourseContentResponse.ModuleContent> modules =
+            moduleRepository
+                .findByCourseIdOrderByPositionAsc(courseId)
+                .stream()
+                .map(module -> {
+                    List<LessonResponse> lessons = lessonRepository
+                        .findByModuleIdOrderByPositionAsc(module.getId())
+                        .stream()
+                        .map(lesson ->
+                            toLessonResponse(
+                                lesson,
+                                completedLessonIds.contains(
+                                    lesson.getId()
+                                )
+                            )
+                        )
+                        .toList();
+
+                    Long quizId = quizRepository
+                        .findByModuleId(module.getId())
+                        .map(quiz -> quiz.getId())
+                        .orElse(null);
+
+                    return new CourseContentResponse.ModuleContent(
+                        module.getId(),
+                        module.getTitle(),
+                        module.getPosition(),
+                        lessons,
+                        quizId
+                    );
+                })
+                .toList();
+
+        int progress = finalEnrollment == null
+            ? 0
+            : finalEnrollment.getProgressPercent();
+
+        return new CourseContentResponse(
+            mappingService.toCourseResponse(course),
+            progress,
+            modules
+        );
+    }
+
+    @Transactional
+    public ProgressResponse markLessonCompleted(Long lessonId) {
+        User student = currentUserService.getCurrentUser();
+        Lesson lesson = findLesson(lessonId);
+        Long courseId = lesson.getModule().getCourse().getId();
+
+        Enrollment enrollment = enrollmentRepository
+            .findByStudentIdAndCourseId(student.getId(), courseId)
+            .orElseThrow(() ->
+                new ForbiddenException(
+                    "You are not enrolled in this course"
+                )
+            );
+
+        LessonProgress progress = progressRepository
+            .findByEnrollmentIdAndLessonId(
+                enrollment.getId(),
+                lessonId
+            )
+            .orElseGet(LessonProgress::new);
+
+        progress.setEnrollment(enrollment);
+        progress.setLesson(lesson);
+        progress.setCompleted(true);
+        progress.setCompletedAt(LocalDateTime.now());
+        progressRepository.save(progress);
+
+        long totalLessons =
+            lessonRepository.countByModuleCourseId(courseId);
+
+        long completedLessons =
+            progressRepository.countByEnrollmentIdAndCompletedTrue(
+                enrollment.getId()
+            );
+
+        int percentage = totalLessons == 0
+            ? 0
+            : (int) Math.round(
+                completedLessons * 100.0 / totalLessons
+            );
+
+        enrollment.setProgressPercent(percentage);
+
+        if (percentage == 100) {
+            enrollment.setStatus(EnrollmentStatus.COMPLETED);
+        }
+
+        enrollmentRepository.save(enrollment);
+
+        return new ProgressResponse(
+            enrollment.getId(),
+            lessonId,
+            true,
+            percentage
+        );
+    }
 
     public CourseModule findModule(Long moduleId) {
         return moduleRepository

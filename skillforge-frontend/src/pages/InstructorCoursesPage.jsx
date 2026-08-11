@@ -8,6 +8,7 @@ import {
 } from "../api/skillforgeApi";
 import AlertMessage from "../components/AlertMessage";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useToast } from "../context/ToastContext";
 
 const newCourse = {
   id: null,
@@ -20,6 +21,7 @@ const newCourse = {
 };
 
 export default function InstructorCoursesPage() {
+  const toast = useToast();
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(newCourse);
@@ -49,7 +51,9 @@ export default function InstructorCoursesPage() {
         );
       }
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -88,9 +92,12 @@ export default function InstructorCoursesPage() {
         categoryId: categories[0]?.id || ""
       });
       setMessage("Course saved as a draft.");
+      toast.success("Course saved as a draft.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -98,9 +105,12 @@ export default function InstructorCoursesPage() {
     try {
       await courseApi.submit(id);
       setMessage("Course sent for admin approval.");
+      toast.success("Course sent for admin approval.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -111,9 +121,12 @@ export default function InstructorCoursesPage() {
 
     try {
       await courseApi.remove(id);
+      toast.success("Course deleted successfully.");
       await load();
     } catch (requestError) {
-      setError(getErrorMessage(requestError));
+      const errorMessage = getErrorMessage(requestError);
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -136,10 +149,11 @@ export default function InstructorCoursesPage() {
 
   return (
     <div className="container py-5">
-      <p className="text-primary fw-semibold mb-1">
-        INSTRUCTOR
-      </p>
-      <h1 className="fw-bold mb-4">Manage Courses</h1>
+      <div className="section-heading mb-4">
+        <span className="section-eyebrow">Instructor workspace</span>
+        <h1>Manage Courses</h1>
+        <p>Create, update and submit your courses for approval.</p>
+      </div>
 
       <AlertMessage>{error}</AlertMessage>
       <AlertMessage type="success">{message}</AlertMessage>

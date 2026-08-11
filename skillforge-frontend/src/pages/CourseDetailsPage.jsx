@@ -5,117 +5,375 @@ import {
   useParams
 } from "react-router-dom";
 
+import loadRazorpay from "../utils/loadRazorpay";
 import getErrorMessage from "../api/getErrorMessage";
+
 import {
   courseApi,
   enrollmentApi,
   paymentApi,
   wishlistApi
 } from "../api/skillforgeApi";
+
 import AlertMessage from "../components/AlertMessage";
-import CheckoutModal from "../components/CheckoutModal";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 export default function CourseDetailsPage() {
   const { courseId } = useParams();
   const { user } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState("");
-  const [isEnrolled, setIsEnrolled] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [checkoutError, setCheckoutError] = useState("");
+  const [checkoutError, setCheckoutError] =
+    useState("");
+  const [isEnrolled, setIsEnrolled] =
+    useState(false);
+  const [isWishlisted, setIsWishlisted] =
+    useState(false);
 
   useEffect(() => {
-    courseApi
-      .get(courseId)
-      .then((response) => setCourse(response.data))
-      .catch((error) =>
-        setMessage(
-          getErrorMessage(error, "Course was not found")
-        )
-      )
-      .finally(() => setLoading(false));
+    loadCourse();
   }, [courseId]);
 
   useEffect(() => {
     if (user?.role !== "STUDENT") {
+      setIsEnrolled(false);
       return;
     }
 
-    enrollmentApi
-      .mine()
-      .then((response) =>
-        setIsEnrolled(
-          response.data.some(
-            (enrollment) =>
-              String(enrollment.courseId) === String(courseId)
-          )
-        )
-      )
-      .catch(() => setIsEnrolled(false));
+    checkEnrollment();
   }, [courseId, user]);
+
+  useEffect(() => {
+    if (user?.role !== "STUDENT") {
+      setIsWishlisted(false);
+      return;
+    }
+
+    checkWishlist();
+  }, [courseId, user]);
+
+  async function loadCourse() {
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const response =
+        await courseApi.get(courseId);
+
+      setCourse(response.data);
+    } catch (error) {
+      setCourse(null);
+
+      setMessage(
+        getErrorMessage(
+          error,
+          "Course was not found"
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function checkEnrollment() {
+    try {
+      const response =
+        await enrollmentApi.mine();
+
+      const enrollments = Array.isArray(
+        response.data
+      )
+        ? response.data
+        : [];
+
+      const enrolled = enrollments.some(
+        (enrollment) =>
+          String(enrollment.courseId) ===
+          String(courseId)
+      );
+
+      setIsEnrolled(enrolled);
+    } catch (error) {
+      console.error(
+        "Unable to check enrollment:",
+        error
+      );
+
+      setIsEnrolled(false);
+    }
+  }
 
   function purchase() {
     if (!user) {
       navigate("/login", {
-        state: { from: `/courses/${courseId}` }
+        state: {
+          from: `/courses/${courseId}`
+        }
       });
+
       return;
     }
 
     if (user.role !== "STUDENT") {
-      setMessage("Only students can enroll in courses.");
+      const warning = "Only students can enroll in courses.";
+      setMessage(warning);
+      toast.warning(warning);
+
       return;
     }
 
-    setCheckoutError("");
-    setShowCheckout(true);
+    completePurchase();
   }
 
   async function completePurchase() {
+    if (!course) {
+      const errorMessage =
+        "Course information is not available.";
+      setCheckoutError(errorMessage);
+      toast.error(errorMessage);
+
+      return;
+    }
+
     setWorking(true);
+    setCheckoutError("");
+    setMessage("");
 
     try {
-      await paymentApi.checkout(course.id);
-      setShowCheckout(false);
-      navigate("/student/learning");
+      const scriptLoaded =
+        await loadRazorpay();
+
+      if (!scriptLoaded) {
+        const errorMessage =
+          "Unable to load Razorpay Checkout. Check your internet connection.";
+        setCheckoutError(errorMessage);
+        toast.error(errorMessage);
+
+        return;
+      }
+
+      const response =
+        await paymentApi.createRazorpayOrder(
+          course.id
+        );
+
+      const order = response.data;
+
+      const options = {
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "SkillForge",
+        description: order.courseTitle,
+        order_id: order.razorpayOrderId,
+
+        prefill: {
+          name: order.studentName,
+          email: order.studentEmail
+        },
+
+        notes: {
+          courseId: String(order.courseId),
+          paymentRecordId: String(
+            order.paymentRecordId
+          )
+        },
+
+        theme: {
+          color: "#4f46e5"
+        },
+
+        handler: async function (
+          paymentResponse
+        ) {
+          try {
+            setWorking(true);
+            setCheckoutError("");
+
+            await paymentApi.verifyRazorpayPayment({
+              razorpayOrderId:
+                paymentResponse.razorpay_order_id,
+
+              razorpayPaymentId:
+                paymentResponse.razorpay_payment_id,
+
+              razorpaySignature:
+                paymentResponse.razorpay_signature
+            });
+
+            setIsEnrolled(true);
+
+            toast.success(
+              "Payment successful. Course added to My Learning."
+            );
+
+            navigate("/student/learning");
+          } catch (error) {
+            const errorMessage = getErrorMessage(
+              error,
+              "Payment verification failed"
+            );
+            setCheckoutError(errorMessage);
+            toast.error(errorMessage);
+          } finally {
+            setWorking(false);
+          }
+        },
+
+        modal: {
+          ondismiss: function () {
+            const warning =
+              "Payment was cancelled. You can try again.";
+            setCheckoutError(warning);
+            toast.warning(warning);
+
+            setWorking(false);
+          }
+        }
+      };
+
+      const razorpayCheckout =
+        new window.Razorpay(options);
+
+      razorpayCheckout.on(
+        "payment.failed",
+        function (failureResponse) {
+          console.error(
+            "Razorpay payment failed:",
+            failureResponse.error
+          );
+
+          const errorMessage =
+            failureResponse.error?.description ||
+            "Payment failed. Please try again.";
+          setCheckoutError(errorMessage);
+          toast.error(errorMessage);
+
+          setWorking(false);
+        }
+      );
+
+      razorpayCheckout.open();
     } catch (error) {
-      setCheckoutError(getErrorMessage(error));
+      const errorMessage = getErrorMessage(
+        error,
+        "Unable to start Razorpay payment"
+      );
+      setCheckoutError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setWorking(false);
     }
   }
 
+  async function checkWishlist() {
+    try {
+      const response = await wishlistApi.mine();
+
+      const wishlist = Array.isArray(response.data)
+        ? response.data
+        : [];
+
+      const wishlisted = wishlist.some(
+        (item) =>
+          String(item.id) === String(courseId)
+      );
+
+      setIsWishlisted(wishlisted);
+    } catch (error) {
+      console.error(
+        "Unable to check wishlist:",
+        error
+      );
+
+      setIsWishlisted(false);
+    }
+  }
+
   async function addWishlist() {
     if (!user) {
-      navigate("/login");
+      navigate("/login", {
+        state: {
+          from: `/courses/${courseId}`
+        }
+      });
+
+      return;
+    }
+
+    if (user.role !== "STUDENT") {
+      const warning =
+        "Only students can add courses to the wishlist.";
+      setMessage(warning);
+      toast.warning(warning);
+
       return;
     }
 
     try {
-      await wishlistApi.add(course.id);
-      setMessage("Course added to your wishlist.");
+      setMessage("");
+      setCheckoutError("");
+
+      if (isWishlisted) {
+        await wishlistApi.remove(course.id);
+        setIsWishlisted(false);
+
+        const successMessage =
+          "Course removed from your wishlist.";
+        setMessage(successMessage);
+        toast.success(successMessage);
+      } else {
+        await wishlistApi.add(course.id);
+        setIsWishlisted(true);
+
+        const successMessage =
+          "Course added to your wishlist.";
+        setMessage(successMessage);
+        toast.success(successMessage);
+      }
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      const errorMessage = getErrorMessage(
+        error,
+        "Unable to update wishlist"
+      );
+      setMessage(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
   if (loading) {
-    return <LoadingSpinner message="Loading course..." />;
+    return (
+      <LoadingSpinner message="Loading course..." />
+    );
   }
 
   if (!course) {
     return (
       <div className="container py-5">
-        <AlertMessage>{message}</AlertMessage>
+        <AlertMessage type="danger">
+          {message ||
+            "Course information is unavailable."}
+        </AlertMessage>
+
+        <Link
+          to="/courses"
+          className="btn btn-primary mt-3"
+        >
+          Back to Courses
+        </Link>
       </div>
     );
   }
+
+  const coursePrice =
+    Number(course.price) || 0;
 
   return (
     <div>
@@ -124,7 +382,8 @@ export default function CourseDetailsPage() {
           <div className="row g-5 align-items-center">
             <div className="col-lg-7">
               <span className="badge text-bg-warning mb-3">
-                {course.categoryName}
+                {course.categoryName ||
+                  "Course"}
               </span>
 
               <h1 className="display-5 fw-bold">
@@ -136,7 +395,10 @@ export default function CourseDetailsPage() {
               </p>
 
               <p className="mb-0">
-                Created by <strong>{course.instructorName}</strong>
+                Created by{" "}
+                <strong>
+                  {course.instructorName}
+                </strong>
                 {" · "}
                 {course.level}
               </p>
@@ -151,16 +413,21 @@ export default function CourseDetailsPage() {
                   }
                   className="card-img-top course-detail-image"
                   alt={course.title}
+                  onError={(event) => {
+                    event.currentTarget.src =
+                      "/course-placeholder.svg";
+                  }}
                 />
 
                 <div className="card-body">
                   <p className="h3 text-primary fw-bold">
-                    {Number(course.price) === 0
+                    {coursePrice === 0
                       ? "Free"
-                      : `₹${Number(course.price).toFixed(0)}`}
+                      : `₹${coursePrice.toFixed(0)}`}
                   </p>
 
-                  {!user || user.role === "STUDENT" ? (
+                  {!user ||
+                    user.role === "STUDENT" ? (
                     <>
                       {isEnrolled ? (
                         <Link
@@ -174,12 +441,12 @@ export default function CourseDetailsPage() {
                         <button
                           type="button"
                           className="btn btn-primary w-100 mb-2"
-                          disabled={working}
                           onClick={purchase}
+                          disabled={working}
                         >
                           {working
-                            ? "Processing..."
-                            : Number(course.price) === 0
+                            ? "Opening Payment..."
+                            : coursePrice === 0
                               ? "Enroll Now"
                               : "Buy Now"}
                         </button>
@@ -187,16 +454,28 @@ export default function CourseDetailsPage() {
 
                       <button
                         type="button"
-                        className="btn btn-outline-secondary w-100"
+                        className={`btn w-100${isWishlisted
+                            ? " btn-danger"
+                            : " btn-outline-secondary"
+                          }`}
                         onClick={addWishlist}
+                        disabled={working}
                       >
-                        <i className="bi bi-heart me-2"></i>
-                        Add to Wishlist
+                        <i
+                          className={`bi me-2 ${isWishlisted
+                              ? "bi-heart-fill"
+                              : "bi-heart"
+                            }`}
+                        ></i>
+                        {isWishlisted
+                          ? "Remove from Wishlist"
+                          : "Add to Wishlist"}
                       </button>
                     </>
                   ) : (
                     <p className="small text-secondary mb-0">
-                      Use a student account to enroll in this course.
+                      Use a student account to enroll
+                      in this course.
                     </p>
                   )}
                 </div>
@@ -207,7 +486,17 @@ export default function CourseDetailsPage() {
       </section>
 
       <div className="container py-5">
-        <AlertMessage type="info">{message}</AlertMessage>
+        {message && (
+          <AlertMessage type="info">
+            {message}
+          </AlertMessage>
+        )}
+
+        {checkoutError && (
+          <AlertMessage type="danger">
+            {checkoutError}
+          </AlertMessage>
+        )}
 
         <div className="row g-4">
           <div className="col-lg-8">
@@ -216,9 +505,11 @@ export default function CourseDetailsPage() {
             </h2>
 
             <p className="text-secondary">
-              Follow structured modules and lessons, complete
-              practice quizzes, track your progress and receive
-              a verified certificate after completion.
+              Follow structured modules and
+              lessons, complete practice quizzes,
+              track your progress and receive a
+              verified certificate after
+              completion.
             </p>
           </div>
 
@@ -248,21 +539,13 @@ export default function CourseDetailsPage() {
           </div>
         </div>
 
-        <Link to="/courses" className="btn btn-link px-0 mt-4">
+        <Link
+          to="/courses"
+          className="btn btn-link px-0 mt-4"
+        >
           ← Back to courses
         </Link>
       </div>
-
-      {showCheckout && (
-        <CheckoutModal
-          course={course}
-          user={user}
-          processing={working}
-          error={checkoutError}
-          onClose={() => setShowCheckout(false)}
-          onConfirm={completePurchase}
-        />
-      )}
     </div>
   );
 }

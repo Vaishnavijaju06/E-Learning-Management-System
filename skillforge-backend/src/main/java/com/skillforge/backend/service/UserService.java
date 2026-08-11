@@ -2,6 +2,7 @@ package com.skillforge.backend.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +20,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final MappingService mappingService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(
         UserRepository userRepository,
         CurrentUserService currentUserService,
-        MappingService mappingService
+        MappingService mappingService,
+        PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.currentUserService = currentUserService;
         this.mappingService = mappingService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponse getProfile() {
@@ -50,6 +54,31 @@ public class UserService {
         return mappingService.toUserResponse(
             userRepository.save(user)
         );
+    }
+
+    @Transactional
+    public void changePassword(
+        String currentPassword,
+        String newPassword
+    ) {
+        User user = currentUserService.getCurrentUser();
+
+        if (
+            !passwordEncoder.matches(
+                currentPassword,
+                user.getPassword()
+            )
+        ) {
+            throw new BadRequestException(
+                "Current password is incorrect"
+            );
+        }
+
+        user.setPassword(
+            passwordEncoder.encode(newPassword)
+        );
+
+        userRepository.save(user);
     }
 
     public List<UserResponse> findAll() {

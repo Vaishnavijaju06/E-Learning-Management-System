@@ -2,7 +2,6 @@ package com.skillforge.backend.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,18 +11,24 @@ import com.skillforge.backend.entity.Category;
 import com.skillforge.backend.exception.BadRequestException;
 import com.skillforge.backend.exception.ResourceNotFoundException;
 import com.skillforge.backend.repository.CategoryRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.skillforge.backend.repository.CourseRepository;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryService {
 
-	@Autowired
     private final CategoryRepository categoryRepository;
+    private final CourseRepository courseRepository;
     private final MappingService mappingService;
 
-    
+    public CategoryService(
+        CategoryRepository categoryRepository,
+        CourseRepository courseRepository,
+        MappingService mappingService
+    ) {
+        this.categoryRepository = categoryRepository;
+        this.courseRepository = courseRepository;
+        this.mappingService = mappingService;
+    }
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAll() {
@@ -79,7 +84,18 @@ public class CategoryService {
         );
     }
 
-    
+    @Transactional
+    public void delete(Long categoryId) {
+        Category category = findEntity(categoryId);
+
+        if (courseRepository.existsByCategoryId(categoryId)) {
+            throw new BadRequestException(
+                "A category used by a course cannot be deleted"
+            );
+        }
+
+        categoryRepository.delete(category);
+    }
 
     public Category findEntity(Long categoryId) {
         return categoryRepository

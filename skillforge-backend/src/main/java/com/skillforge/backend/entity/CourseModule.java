@@ -46,5 +46,10 @@ public class CourseModule extends BaseEntity {
     )
     private List<Lesson> lessons = new ArrayList<>();
 
-   
+    @OneToOne(
+        mappedBy = "module",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private Quiz quiz;
 }

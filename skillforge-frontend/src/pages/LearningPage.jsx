@@ -14,8 +14,10 @@ import {
 } from "../api/skillforgeApi";
 import AlertMessage from "../components/AlertMessage";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useToast } from "../context/ToastContext";
 
 function QuizPanel({ module, onCompleted }) {
+  const toast = useToast();
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -40,10 +42,19 @@ function QuizPanel({ module, onCompleted }) {
       const response = await quizApi.submit(quiz.id, answers);
       setResult(response.data);
       if (response.data.passed) {
+        toast.success(
+          `Quiz passed with ${response.data.score}/${response.data.totalMarks}.`
+        );
         onCompleted();
+      } else {
+        toast.warning(
+          `Quiz score: ${response.data.score}/${response.data.totalMarks}. Try again.`
+        );
       }
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      const errorMessage = getErrorMessage(error);
+      setMessage(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -125,6 +136,7 @@ function QuizPanel({ module, onCompleted }) {
 }
 
 export default function LearningPage() {
+  const toast = useToast();
   const { courseId } = useParams();
   const [content, setContent] = useState(null);
   const [activeLessonId, setActiveLessonId] = useState(null);
@@ -184,8 +196,11 @@ export default function LearningPage() {
       await contentApi.completeLesson(activeLesson.id);
       await loadContent();
       setMessage("Lesson completed. Progress updated.");
+      toast.success("Lesson completed. Progress updated.");
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      const errorMessage = getErrorMessage(error);
+      setMessage(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setWorking(false);
     }
@@ -197,11 +212,14 @@ export default function LearningPage() {
 
     try {
       const response = await certificateApi.issue(courseId);
-      setMessage(
-        `Certificate ready: ${response.data.serialNumber}`
-      );
+      const successMessage =
+        `Certificate ready: ${response.data.serialNumber}`;
+      setMessage(successMessage);
+      toast.success(successMessage);
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      const errorMessage = getErrorMessage(error);
+      setMessage(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setWorking(false);
     }

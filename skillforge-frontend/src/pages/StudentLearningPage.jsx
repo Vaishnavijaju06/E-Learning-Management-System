@@ -25,25 +25,68 @@ export default function StudentLearningPage() {
     return <LoadingSpinner message="Loading your courses..." />;
   }
 
+  const averageProgress = enrollments.length
+    ? Math.round(
+        enrollments.reduce(
+          (total, item) => total + item.progressPercent,
+          0
+        ) / enrollments.length
+      )
+    : 0;
+
   return (
     <div className="container py-5">
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div>
-          <p className="text-primary fw-semibold mb-1">
-            STUDENT AREA
+      <div className="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div className="section-heading">
+          <span className="section-eyebrow">
+            Student workspace
+          </span>
+          <h1>My Learning</h1>
+          <p>
+            Continue courses, track progress and complete your
+            learning goals.
           </p>
-          <h1 className="fw-bold mb-0">My Learning</h1>
         </div>
         <Link className="btn btn-outline-primary" to="/courses">
           Browse More Courses
+          <i className="bi bi-arrow-right ms-2"></i>
         </Link>
       </div>
 
       <AlertMessage>{error}</AlertMessage>
 
+      {enrollments.length > 0 && (
+        <div className="row g-3 mb-4">
+          <div className="col-sm-6 col-lg-3">
+            <div className="metric-card h-100">
+              <div className="metric-icon">
+                <i className="bi bi-journal-bookmark"></i>
+              </div>
+              <span className="metric-label">Enrolled courses</span>
+              <strong className="metric-value">
+                {enrollments.length}
+              </strong>
+            </div>
+          </div>
+          <div className="col-sm-6 col-lg-3">
+            <div className="metric-card h-100">
+              <div className="metric-icon">
+                <i className="bi bi-graph-up-arrow"></i>
+              </div>
+              <span className="metric-label">Average progress</span>
+              <strong className="metric-value">
+                {averageProgress}%
+              </strong>
+            </div>
+          </div>
+        </div>
+      )}
+
       {enrollments.length === 0 ? (
         <div className="empty-state">
-          <i className="bi bi-journal-x"></i>
+          <div className="empty-state-icon">
+            <i className="bi bi-journal-x"></i>
+          </div>
           <h2 className="h4">No courses yet</h2>
           <p className="text-secondary">
             Enroll in a course to start learning.
@@ -59,26 +102,35 @@ export default function StudentLearningPage() {
               className="col-md-6 col-xl-4"
               key={enrollment.id}
             >
-              <article className="card h-100 border-0 shadow-sm overflow-hidden">
-                <img
-                  className="card-img-top learning-card-image"
-                  src={
-                    enrollment.thumbnailUrl ||
-                    "/course-placeholder.svg"
-                  }
-                  alt=""
-                />
-                <div className="card-body d-flex flex-column">
-                  <span className="badge text-bg-light align-self-start mb-2">
+              <article className="card course-card h-100 border-0 overflow-hidden">
+                <div className="course-image-wrapper">
+                  <img
+                    className="card-img-top learning-card-image"
+                    src={
+                      enrollment.thumbnailUrl ||
+                      "/course-placeholder.svg"
+                    }
+                    alt={enrollment.courseTitle}
+                    onError={(event) => {
+                      event.currentTarget.src =
+                        "/course-placeholder.svg";
+                    }}
+                  />
+                  <span className="course-category-chip">
                     {enrollment.status}
                   </span>
-                  <h2 className="h5">
+                </div>
+
+                <div className="card-body d-flex flex-column p-4">
+                  <h2 className="h5 fw-bold">
                     {enrollment.courseTitle}
                   </h2>
 
-                  <div className="mt-auto pt-3">
-                    <div className="d-flex justify-content-between small mb-1">
-                      <span>Progress</span>
+                  <div className="mt-auto pt-4">
+                    <div className="d-flex justify-content-between small mb-2">
+                      <span className="text-secondary">
+                        Course progress
+                      </span>
                       <strong>
                         {enrollment.progressPercent}%
                       </strong>
@@ -92,6 +144,7 @@ export default function StudentLearningPage() {
                       }
                       aria-valuemin="0"
                       aria-valuemax="100"
+                      style={{ height: 8 }}
                     >
                       <div
                         className="progress-bar"
@@ -105,6 +158,7 @@ export default function StudentLearningPage() {
                       className="btn btn-primary w-100"
                       to={`/student/learning/${enrollment.courseId}`}
                     >
+                      <i className="bi bi-play-circle me-2"></i>
                       {enrollment.progressPercent > 0
                         ? "Continue Learning"
                         : "Start Learning"}

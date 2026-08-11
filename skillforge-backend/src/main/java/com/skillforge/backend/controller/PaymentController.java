@@ -8,11 +8,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import com.skillforge.backend.dto.RazorpayOrderResponse;
+import jakarta.validation.Valid;
+
+import com.skillforge.backend.dto.RazorpayVerificationRequest;
 
 import com.skillforge.backend.dto.PaymentRequest;
 import com.skillforge.backend.dto.PaymentResponse;
 import com.skillforge.backend.service.PaymentService;
-
 import jakarta.validation.Valid;
 
 @RestController
@@ -33,6 +37,16 @@ public class PaymentController {
         return paymentService.checkout(request);
     }
 
+    
+    @PostMapping("/razorpay/orders/{courseId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public RazorpayOrderResponse createRazorpayOrder(
+        @PathVariable Long courseId
+    ) {
+        return paymentService
+            .createRazorpayOrder(courseId);
+    }
+    
     @GetMapping("/my")
     @PreAuthorize("hasRole('STUDENT')")
     public List<PaymentResponse> findMine() {
@@ -43,5 +57,16 @@ public class PaymentController {
     @PreAuthorize("hasRole('ADMIN')")
     public List<PaymentResponse> findAll() {
         return paymentService.findAll();
+    }
+    
+    @PostMapping("/razorpay/verify")
+    @PreAuthorize("hasRole('STUDENT')")
+    public PaymentResponse verifyRazorpayPayment(
+        @Valid
+        @RequestBody
+        RazorpayVerificationRequest request
+    ) {
+        return paymentService
+            .verifyRazorpayPayment(request);
     }
 }

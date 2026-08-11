@@ -1,16 +1,17 @@
 package com.skillforge.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.skillforge.backend.enums.ChatIntent;
+import com.skillforge.backend.enums.Role;
+import lombok.Getter;
+import lombok.Setter;
 
-public record ChatbotRequest(
-
-    @NotBlank
-    @Size(min = 2, max = 2000)
-    String message,
-
-    @Size(max = 200)
-    String conversationId
-
-) {
+@Getter
+@Setter
+public class ChatbotRequest {
+	private String message;
+	private String conversationId;
+	private Role role;
+	private String userName;
+	private ChatIntent intent;
+	private ChatbotContext context;
 }

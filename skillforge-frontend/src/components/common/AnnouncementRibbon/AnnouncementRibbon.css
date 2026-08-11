@@ -1,0 +1,43 @@
+.announcement-wrapper {
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(
+        90deg,
+        #111827,
+        #1e3a8a,
+        #4f46e5
+    );
+    padding: 12px 0;
+    border-top: 1px solid rgba(255,255,255,.08);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    white-space: nowrap;
+}
+
+.announcement-track {
+    display: inline-flex;
+    align-items: center;
+    animation: scroll 28s linear infinite;
+}
+
+.announcement-item {
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    margin-right: 80px;
+}
+
+.announcement-wrapper:hover .announcement-track{
+    animation-play-state: paused;
+}
+
+@keyframes scroll{
+
+    from{
+        transform: translateX(0);
+    }
+
+    to{
+        transform: translateX(-50%);
+    }
+
+}

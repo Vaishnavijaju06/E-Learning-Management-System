@@ -11,13 +11,18 @@ import com.skillforge.backend.enums.UserStatus;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByEmailIgnoreCase(String email);
+	Optional<User> findByEmailIgnoreCase(String email);
 
-    boolean existsByEmailIgnoreCase(String email);
+	boolean existsByEmailIgnoreCase(String email);
 
-    List<User> findByRoleOrderByCreatedAtDesc(Role role);
+	List<User> findByRoleOrderByCreatedAtDesc(Role role);
 
-    long countByRole(Role role);
+	List<User> findByRoleAndStatusOrderByCreatedAtDesc(Role role, UserStatus status);
 
-    long countByStatus(UserStatus status);
+	long countByRole(Role role);
+
+	long countByStatus(UserStatus status);
+
+	List<User> findAllByOrderByCreatedAtDesc();
+
 }

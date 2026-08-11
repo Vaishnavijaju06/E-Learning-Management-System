@@ -2,7 +2,6 @@ package com.skillforge.backend.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,20 +16,34 @@ import com.skillforge.backend.exception.BadRequestException;
 import com.skillforge.backend.exception.ForbiddenException;
 import com.skillforge.backend.exception.ResourceNotFoundException;
 import com.skillforge.backend.repository.CourseRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.skillforge.backend.repository.EnrollmentRepository;
+import com.skillforge.backend.repository.WishlistRepository;
 
 @Service
-@RequiredArgsConstructor
 public class CourseService {
 
-	@Autowired
     private final CourseRepository courseRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final WishlistRepository wishlistRepository;
     private final CategoryService categoryService;
     private final CurrentUserService currentUserService;
     private final MappingService mappingService;
 
-   
+    public CourseService(
+        CourseRepository courseRepository,
+        EnrollmentRepository enrollmentRepository,
+        WishlistRepository wishlistRepository,
+        CategoryService categoryService,
+        CurrentUserService currentUserService,
+        MappingService mappingService
+    ) {
+        this.courseRepository = courseRepository;
+        this.enrollmentRepository = enrollmentRepository;
+        this.wishlistRepository = wishlistRepository;
+        this.categoryService = categoryService;
+        this.currentUserService = currentUserService;
+        this.mappingService = mappingService;
+    }
 
     @Transactional(readOnly = true)
     public List<CourseResponse> findApproved(String search) {
@@ -171,7 +184,20 @@ public class CourseService {
         );
     }
 
-   
+    @Transactional
+    public void delete(Long courseId) {
+        Course course = findOwnedCourse(courseId);
+
+        if (enrollmentRepository.countByCourseId(courseId) > 0) {
+            throw new BadRequestException(
+                "A course with enrollments cannot be deleted"
+            );
+        }
+
+        wishlistRepository.deleteByCourseId(courseId);
+        courseRepository.delete(course);
+    }
+
     public Course findEntity(Long courseId) {
         return courseRepository
             .findById(courseId)
