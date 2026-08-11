@@ -1,0 +1,125 @@
+package com.skillforge.backend.service;
+
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.skillforge.backend.dto.AuthResponse;
+import com.skillforge.backend.dto.LoginRequest;
+import com.skillforge.backend.dto.RegisterRequest;
+import com.skillforge.backend.dto.UserResponse;
+import com.skillforge.backend.entity.User;
+import com.skillforge.backend.enums.Role;
+import com.skillforge.backend.enums.UserStatus;
+import com.skillforge.backend.exception.BadRequestException;
+import com.skillforge.backend.exception.UnauthorizedException;
+import com.skillforge.backend.repository.UserRepository;
+import com.skillforge.backend.security.JwtService;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final MappingService mappingService;
+
+	@Autowired
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    AuthService(MappingService mappingService) {
+        this.mappingService = mappingService;
+    }
+//    private final MappingService mappingService;
+//    private final NotificationService notificationService;
+
+    @Transactional
+    public UserResponse register(RegisterRequest request) {
+        if (
+            request.role() != Role.STUDENT
+            && request.role() != Role.INSTRUCTOR
+        ) {
+            throw new BadRequestException(
+                "Only students and instructors can register"
+            );
+        }
+
+        String email = request.email()
+            .trim()
+            .toLowerCase(Locale.ROOT);
+
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new BadRequestException(
+                "An account already exists with this email"
+            );
+        }
+
+        User user = new User();
+        user.setFirstName(request.firstName().trim());
+        user.setLastName(request.lastName().trim());
+        user.setEmail(email);
+        user.setPassword(
+            passwordEncoder.encode(request.password())
+        );
+        user.setPhone(request.phone());
+        user.setRole(request.role());
+        user.setStatus(
+            request.role() == Role.STUDENT
+                ? UserStatus.ACTIVE
+                : UserStatus.PENDING
+        );
+
+        userRepository.save(user);
+        notificationService.sendWelcome(user);
+
+        return mappingService.toUserResponse(user);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository
+            .findByEmailIgnoreCase(request.email())
+            .orElseThrow(() ->
+                new UnauthorizedException(
+                    "Invalid email or password"
+                )
+            );
+
+        if (user.getStatus() == UserStatus.PENDING) {
+            throw new UnauthorizedException(
+                "Instructor account is waiting for admin approval"
+            );
+        }
+
+        if (user.getStatus() == UserStatus.INACTIVE) {
+            throw new UnauthorizedException(
+                "This account is inactive"
+            );
+        }
+
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    request.email(),
+                    request.password()
+                )
+            );
+        } catch (Exception exception) {
+            throw new UnauthorizedException(
+                "Invalid email or password"
+            );
+        }
+
+        return new AuthResponse(
+            jwtService.generateToken(user),
+            mappingService.toUserResponse(user)
+        );
+    }
+}

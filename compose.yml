@@ -1,0 +1,183 @@
+name: ${COMPOSE_PROJECT_NAME:-skillforge-updated}
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-skillforge_db}
+      MYSQL_USER: ${MYSQL_USER:-skillforge}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      TZ: Asia/Kolkata
+    ports:
+      - "127.0.0.1:${MYSQL_HOST_PORT:-3307}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -h localhost -u root -p"$${MYSQL_ROOT_PASSWORD}" --silent
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - skillforge-network
+
+  email-service:
+    image: ${DOCKERHUB_USERNAME}/skillforge-email-service:${IMAGE_TAG:-v1}
+    build:
+      context: ./email-service
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8082
+      InternalApiKey: ${EMAIL_SERVICE_INTERNAL_API_KEY:?Set EMAIL_SERVICE_INTERNAL_API_KEY in .env}
+      Email__EnableDelivery: "${EMAIL_ENABLE_DELIVERY:-false}"
+      Email__SmtpHost: ${SMTP_HOST:-smtp.gmail.com}
+      Email__SmtpPort: "${SMTP_PORT:-587}"
+      Email__UseSsl: "${SMTP_ENABLE_SSL:-false}"
+      Email__SmtpUsername: ${SMTP_USERNAME:-}
+      Email__SmtpPassword: ${SMTP_PASSWORD:-}
+      Email__FromEmail: ${SMTP_FROM_EMAIL:-}
+      Email__FromName: ${SMTP_FROM_NAME:-SkillForge}
+    ports:
+      - "127.0.0.1:${EMAIL_SERVICE_PORT:-8082}:8082"
+    
+    networks:
+      - skillforge-network
+
+  chatbot-service:
+    image: ${DOCKERHUB_USERNAME}/skillforge-chatbot-service:${IMAGE_TAG:-v1}
+    build:
+      context: ./chatbot-service
+    restart: unless-stopped
+    environment:
+      INTERNAL_API_KEY: ${CHATBOT_INTERNAL_API_KEY:?Set CHATBOT_INTERNAL_API_KEY in .env}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      MAX_OUTPUT_TOKENS: "${MAX_OUTPUT_TOKENS:-800}"
+      GROQ_TIMEOUT_SECONDS: "${GROQ_TIMEOUT_SECONDS:-60}"
+      GROQ_MAX_RETRIES: "${GROQ_MAX_RETRIES:-2}"
+    ports:
+      - "127.0.0.1:${CHATBOT_SERVICE_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://localhost:8000/api/chatbot/health', timeout=5)
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - skillforge-network
+
+  backend:
+    image: ${DOCKERHUB_USERNAME}/skillforge-backend:${IMAGE_TAG:-v1}
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: "8081"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-skillforge_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-skillforge}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      JWT_EXPIRATION: "${JWT_EXPIRATION:-86400000}"
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      SEED_DEMO_DATA: "${SEED_DEMO_DATA:-true}"
+      NOTIFICATIONS_ENABLED: "${NOTIFICATIONS_ENABLED:-true}"
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@skillforge.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      EMAIL_SERVICE_URL: http://email-service:8082
+      EMAIL_SERVICE_INTERNAL_API_KEY: ${EMAIL_SERVICE_INTERNAL_API_KEY:?Set EMAIL_SERVICE_INTERNAL_API_KEY in .env}
+      CHATBOT_SERVICE_URL: http://chatbot-service:8000
+      CHATBOT_INTERNAL_API_KEY: ${CHATBOT_INTERNAL_API_KEY:?Set CHATBOT_INTERNAL_API_KEY in .env}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8081}:8081"
+    volumes:
+      - backend_uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      email-service:
+        condition: service_started
+      chatbot-service:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://localhost:8081/actuator/health >/dev/null || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    networks:
+      - skillforge-network
+
+  api-gateway:
+    image: ${DOCKERHUB_USERNAME}/skillforge-api-gateway:${IMAGE_TAG:-v1}
+    build:
+      context: ./api-gateway
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      SPRING_SERVICE_URL: http://backend:8081
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      UPSTREAM_TIMEOUT_MS: "${UPSTREAM_TIMEOUT_MS:-30000}"
+      CHATBOT_TIMEOUT_MS: "${CHATBOT_TIMEOUT_MS:-90000}"
+    ports:
+      - "127.0.0.1:${API_GATEWAY_PORT:-8080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://localhost:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - skillforge-network
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/skillforge-frontend:${IMAGE_TAG:-v1}
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://localhost/ >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - skillforge-network
+
+volumes:
+  mysql_data:
+  backend_uploads:
+
+networks:
+  skillforge-network:
+    driver: bridge

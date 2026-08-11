@@ -1,118 +1,31 @@
-# ==================================================
-# Environment variables and secrets
-# ==================================================
 .env
-.env.*
-!.env.example
-secrets/
-*.pem
-*.key
-*.p12
-*.pfx
-
-# ==================================================
-# Java / Spring Boot
-# ==================================================
-target/
-*.class
-*.jar
-*.war
-*.ear
+**/.env
+**/node_modules/
+**/dist/
+**/target/
+**/bin/
+**/obj/
+**/.venv/
+**/venv/
+**/__pycache__/
+**/.pytest_cache/
 *.log
-.mvn/timing.properties
-.springBeans
-.sts4-cache/
+.idea/
+.vscode/
 
-# Maven
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
+# Eclipse project metadata
+.classpath
+.project
+.settings/
+.factorypath
 
-# ==================================================
-# Node / React / Vite
-# ==================================================
-node_modules/
-dist/
-build/
-coverage/
-.vite/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# ==================================================
-# Python / FastAPI
-# ==================================================
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.venv/
-venv/
-env/
-pip-wheel-metadata/
-*.egg-info/
-
-# ==================================================
-# .NET
-# ==================================================
-bin/
-obj/
-TestResults/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
+# Visual Studio
 .vs/
 
-# ==================================================
-# IDEs
-# ==================================================
-.idea/
-*.iml
-.settings/
-.project
-.classpath
-.factorypath
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.example.json
-
-# ==================================================
-# Operating system
-# ==================================================
+# OS files
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# ==================================================
-# Docker runtime data
-# ==================================================
-docker-data/
-mysql-data/
-redis-data/
-logs/
-
-# ==================================================
-# Generated files
-# ==================================================
-generated/
-uploads/
-certificates/
-temp/
-tmp/
-
-# ==================================================
-# Test reports
-# ==================================================
-surefire-reports/
-failsafe-reports/
-allure-results/
-allure-report/
-/.metadata/
+# Uploaded runtime files (keep folder, ignore contents)
+backend/uploads/*
+!backend/uploads/.gitkeep
