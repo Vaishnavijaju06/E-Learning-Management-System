@@ -4,6 +4,10 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from groq import (
     APIConnectionError,
     APIStatusError,
+    AuthenticationError,
+    BadRequestError,
+    NotFoundError,
+    PermissionDeniedError,
     RateLimitError,
 )
 
@@ -32,6 +36,7 @@ async def health() -> dict[str, str]:
         "mode": (
             "groq" if settings.groq_api_key else "demo"
         ),
+        "model": settings.groq_model,
     }
 
 
@@ -54,6 +59,34 @@ async def chat(request: ChatRequest) -> ChatResponse:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The AI provider is currently unavailable.",
+        ) from error
+    except AuthenticationError as error:
+        logger.error("Groq rejected GROQ_API_KEY: %s", error)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=(
+                "The AI provider rejected GROQ_API_KEY. "
+                "Create a current key in Groq Console and recreate "
+                "the chatbot container."
+            ),
+        ) from error
+    except PermissionDeniedError as error:
+        logger.error("Groq denied this request: %s", error)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=(
+                "The configured Groq key cannot use this model. "
+                "Check GROQ_MODEL and the key permissions."
+            ),
+        ) from error
+    except (BadRequestError, NotFoundError) as error:
+        logger.error("Invalid Groq model/request configuration: %s", error)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=(
+                "Groq rejected the configured model or request. "
+                "Check GROQ_MODEL in the root .env file."
+            ),
         ) from error
     except APIStatusError as error:
         logger.error(
