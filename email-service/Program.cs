@@ -5,9 +5,22 @@ using SkillForge.EmailService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("Email")
-);
+builder.Services
+    .AddOptions<EmailSettings>()
+    .Bind(builder.Configuration.GetSection("Email"))
+    .Validate(
+        settings =>
+            !settings.EnableDelivery
+            || (
+                !string.IsNullOrWhiteSpace(settings.SmtpHost)
+                && settings.SmtpPort is > 0 and <= 65535
+                && !string.IsNullOrWhiteSpace(settings.SmtpUsername)
+                && !string.IsNullOrWhiteSpace(settings.SmtpPassword)
+                && !string.IsNullOrWhiteSpace(settings.FromEmail)
+            ),
+        "When email delivery is enabled, Email:SmtpHost, SmtpPort, SmtpUsername, SmtpPassword and FromEmail are required."
+    )
+    .ValidateOnStart();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddHealthChecks();
 

@@ -16,8 +16,15 @@ public sealed class InternalApiKeyMiddleware
     {
         _next = next;
         _expectedKey =
-            configuration["InternalApiKey"]
-            ?? "skillforge-email-internal-key";
+            configuration["InternalApiKey"]?.Trim()
+            ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_expectedKey))
+        {
+            throw new InvalidOperationException(
+                "InternalApiKey must be configured for the email service."
+            );
+        }
     }
 
     public async Task InvokeAsync(HttpContext context)

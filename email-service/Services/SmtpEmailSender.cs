@@ -65,9 +65,14 @@ public sealed class SmtpEmailSender : IEmailSender
             : new TextPart("plain") { Text = request.Body };
 
         using var client = new SmtpClient();
-        var socketOptions = _settings.UseSsl
-            ? SecureSocketOptions.SslOnConnect
-            : SecureSocketOptions.StartTlsWhenAvailable;
+        var socketOptions = _settings.SmtpPort switch
+        {
+            465 => SecureSocketOptions.SslOnConnect,
+            587 => SecureSocketOptions.StartTls,
+            _ when _settings.UseSsl =>
+                SecureSocketOptions.SslOnConnect,
+            _ => SecureSocketOptions.StartTlsWhenAvailable
+        };
 
         await client.ConnectAsync(
             _settings.SmtpHost,
@@ -78,9 +83,20 @@ public sealed class SmtpEmailSender : IEmailSender
 
         if (!string.IsNullOrWhiteSpace(_settings.SmtpUsername))
         {
+            // Gmail password authentication must use an App Password.
+            // Users often paste its visual spaces; Gmail expects the
+            // underlying 16-character value without whitespace.
+            client.AuthenticationMechanisms.Remove("XOAUTH2");
+            var username = _settings.SmtpUsername.Trim();
+            var password = string.Concat(
+                _settings.SmtpPassword.Where(
+                    character => !char.IsWhiteSpace(character)
+                )
+            );
+
             await client.AuthenticateAsync(
-                _settings.SmtpUsername,
-                _settings.SmtpPassword,
+                username,
+                password,
                 cancellationToken
             );
         }
